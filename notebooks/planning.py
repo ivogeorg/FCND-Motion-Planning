@@ -1,7 +1,8 @@
 from enum import Enum
 from queue import PriorityQueue
+import numpy as np
 
-
+# Quadroter assume all actions cost the same.
 class Action(Enum):
     """
     An action is represented by a 3 element tuple.
@@ -10,20 +11,15 @@ class Action(Enum):
     to the current grid position. The third and final value
     is the cost of performing the action.
     """
-    LEFT = (0, -1, 1)
-    RIGHT = (0, 1, 1)
-    UP = (-1, 0, 1)
-    DOWN = (1, 0, 1)
 
-    def __str__(self):
-        if self == self.LEFT:
-            return '<'
-        elif self == self.RIGHT:
-            return '>'
-        elif self == self.UP:
-            return '^'
-        elif self == self.DOWN:
-            return 'v'
+    WEST = (0, -1, 1)
+    EAST = (0, 1, 1)
+    NORTH = (-1, 0, 1)
+    SOUTH = (1, 0, 1)
+    NORTH_WEST = (-1, -1, np.sqrt(2))
+    NORTH_EAST = (-1, 1, np.sqrt(2))
+    SOUTH_WEST = (1, -1, np.sqrt(2))
+    SOUTH_EAST = (1, 1, np.sqrt(2))
 
     @property
     def cost(self):
@@ -38,7 +34,7 @@ def valid_actions(grid, current_node):
     """
     Returns a list of valid actions given a grid and current node.
     """
-    valid = [Action.UP, Action.LEFT, Action.RIGHT, Action.DOWN]
+    valid_actions = list(Action)
     n, m = grid.shape[0] - 1, grid.shape[1] - 1
     x, y = current_node
 
@@ -46,15 +42,24 @@ def valid_actions(grid, current_node):
     # it's an obstacle
 
     if x - 1 < 0 or grid[x - 1, y] == 1:
-        valid.remove(Action.UP)
+        valid_actions.remove(Action.NORTH)
     if x + 1 > n or grid[x + 1, y] == 1:
-        valid.remove(Action.DOWN)
+        valid_actions.remove(Action.SOUTH)
     if y - 1 < 0 or grid[x, y - 1] == 1:
-        valid.remove(Action.LEFT)
+        valid_actions.remove(Action.WEST)
     if y + 1 > m or grid[x, y + 1] == 1:
-        valid.remove(Action.RIGHT)
+        valid_actions.remove(Action.EAST)
 
-    return valid
+    if (x - 1 < 0 or y - 1 < 0) or grid[x - 1, y - 1] == 1:
+        valid_actions.remove(Action.NORTH_WEST)
+    if (x - 1 < 0 or y + 1 > m) or grid[x - 1, y + 1] == 1:
+        valid_actions.remove(Action.NORTH_EAST)
+    if (x + 1 > n or y - 1 < 0) or grid[x + 1, y - 1] == 1:
+        valid_actions.remove(Action.SOUTH_WEST)
+    if (x + 1 > n or y + 1 > m) or grid[x + 1, y + 1] == 1:
+        valid_actions.remove(Action.SOUTH_EAST)
+
+    return valid_actions
 
 
 def a_star(grid, h, start, goal):
@@ -107,4 +112,5 @@ def a_star(grid, h, start, goal):
         print('Failed to find a path!')
         print('**********************') 
     return path[::-1], path_cost
+
 

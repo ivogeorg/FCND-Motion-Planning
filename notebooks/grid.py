@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def create_grid(data, drone_altitude, safety_distance):
     """
     Returns a grid representation of a 2D configuration space
@@ -20,6 +19,7 @@ def create_grid(data, drone_altitude, safety_distance):
     # calculate the size of the grid.
     north_size = int(np.ceil(north_max - north_min))
     east_size = int(np.ceil(east_max - east_min))
+
     # Initialize an empty grid
     grid = np.zeros((north_size, east_size))
 
