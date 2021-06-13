@@ -136,15 +136,24 @@ class MotionPlanning(Drone):
         grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
-        # Define starting point on the grid (this is just grid center)
+        # Define starting point on the grid (this is just grid origin)
         grid_start = (-north_offset, -east_offset)
         
-        # TODO: convert start position to current position rather than map center
+        # TODO: convert start position to current position rather than map origin
+        # It's very likely that the map origin contains an obstacle at the target altitude
         
         # Set goal as some arbitrary position on the grid
+        # TODO: Randomize but position away from obstacles at any altitude.
+        #       This may be done in a random sampling loop. Note that this may
+        #       include courtyards which may require climbing to the top of
+        #       the surrounding building and then descending into the courtyard.
+        #       Have to experiment with such goal positions. Also experiement
+        #       with spiral descent into courtyards.
         grid_goal = (-north_offset + 10, -east_offset + 10)
         
         # TODO: adapt to set goal as latitude / longitude position and convert
+        # TODO: There should probably be a check that lat/lon are within the
+        #       map. These may be added as command-line arguments.
 
         # TODO: Run A* to find a path from start to goal
         # TODO: Add diagonal motions with a cost of sqrt(2) to your A* implementation
@@ -154,8 +163,9 @@ class MotionPlanning(Drone):
         
         # TODO: prune path to minimize number of waypoints
         
-        
-        # TODO (if you're feeling ambitious): Try a different approach altogether!
+        # TODO: (if you're feeling ambitious): Try a different approach altogether!
+        # TODO: Probabilistic roadmap with receding-horizon local replanning and 
+        #       smoothing for v.2
 
         # Convert path to waypoints
         waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
