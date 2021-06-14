@@ -191,7 +191,7 @@ class MotionPlanning(Drone):
 
         self.stop_log()
 
-
+# TODO: Command-line argument for planner version (1-grid, 2-graph)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
