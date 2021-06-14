@@ -40,6 +40,11 @@ class MotionPlanning(Drone):
         self.register_callback(MsgID.LOCAL_VELOCITY, self.velocity_callback)
         self.register_callback(MsgID.STATE, self.state_callback)
 
+    # TODO: 1. Parametrize the deadband radius for waypoints.
+    # TODO: 2. For different waypoints (e.g. graph nodes) pick a
+    #          different appropriate deadband radius. For tight
+    #          corners, it should be smaller; for straight streches
+    #          or smooth long turns, it should be larger.
     def local_position_callback(self):
         if self.flight_state == States.TAKEOFF:
             if -1.0 * self.local_position[2] > 0.95 * self.target_position[2]:
