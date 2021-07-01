@@ -191,8 +191,11 @@ class MotionPlanning(Drone):
 
         self.stop_log()
 
-# TODO: Command-line argument for planner version (1-grid, 2-graph)
-# TODO: Three levels of planning: 1-approximate, 2-receding horizon, 3-dynamic obstacle avoidance
+# TODO: Command-line argument for planner version (1-grid, 2-graph, 3-receding horizon w/ replanning)
+# TODO: Version 3 built on 3 layers:
+#       1-approximate global, 
+#       2-receding horizon local replanning, 
+#       3-dynamic obstacle avoidance (incl. wind)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
