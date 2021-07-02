@@ -194,7 +194,7 @@ class MotionPlanning(Drone):
 # TODO: Command-line argument for planner version (1-grid, 2-graph, 3-receding horizon w/ replanning)
 # TODO: Version 3 built on 3 layers:
 #       1-approximate global, 
-#       2-receding horizon local replanning, 
+#       2-receding horizon local replanning (incl. vertical search for couryard descent), 
 #       3-dynamic obstacle avoidance (incl. wind)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
