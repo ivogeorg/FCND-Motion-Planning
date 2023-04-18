@@ -2,3 +2,7 @@
 
 ### Sequence of notebook exercises
 
+#### I. Planning as search
+
+1. [BFS](BFS.ipynb). ([solution](BFS-Solution.ipynb))
+2. 
