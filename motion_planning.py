@@ -196,6 +196,9 @@ class MotionPlanning(Drone):
 #       1-approximate global, 
 #       2-receding horizon local replanning (incl. vertical search for couryard descent), 
 #       3-dynamic obstacle avoidance (incl. wind)
+# TODO: The now optional [Python controller](https://github.com/udacity/FCND-Controls) project from 
+#       the next FCND course (Controls) may contain a richer sensorium which can help with the
+#       implementation of the more advanced motion planning.
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
