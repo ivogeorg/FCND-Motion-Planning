@@ -1,6 +1,6 @@
 import argparse
 import time
-# import msgpack
+import msgpack
 from enum import Enum, auto
 
 import numpy as np
