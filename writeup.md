@@ -41,7 +41,7 @@ These scripts contain a basic planning implementation that includes...
 
 <img src="assets/noun-question.png" height="200" />   
 
-1. Where is the actual (simulated) drone motion (up, down, etc.) generated? If in the simulator, how is the drone model actually encoded?
+1. Where is the actual (simulated) drone motion (up, down, etc.) generated? If in the simulator, how is the drone model actually encoded? What order model is it? (It might be good to start the robotics course to get a sense.)
 2. Is there any data in the raw sensor telemetry?
 
 
