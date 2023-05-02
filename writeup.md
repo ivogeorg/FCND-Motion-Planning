@@ -32,7 +32,8 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
 These scripts contain a basic planning implementation that includes...
 
-**NOTES 01:**
+<img src="assets/noun-notes.png" height="200" /> 
+
 1. Three major components:
    1. The `udacidrone.Drone` API, which is a ["pass-through"](https://udacity.github.io/udacidrone/docs/drone-api.html).
    2. The MAVLink protocol used to send messages back and forth between the `Drone` and the simulator.
