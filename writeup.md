@@ -39,6 +39,12 @@ These scripts contain a basic planning implementation that includes...
    2. The MAVLink protocol (over TCP to `localhost`) used to send messages back and forth between the `Drone` and the simulator.  
    3. The [FCND Simulator](https://github.com/udacity/FCND-Simulator), based on Unity, holds the SF city environment (**note:** there is discrepancy between this environment and the *colliders* file), contains a model of the drone **(where, how??? dynamics???)**, and uses PhysX to simulate realistic drone motion.  
 
+<img src="assets/noun-question.png" height="200" />   
+
+1. Where is the actual (simulated) drone motion (up, down, etc.) generated? If in the simulator, how is the drone model actually encoded?
+2. Is there any data in the raw sensor telemetry?
+
+
 And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
 ![Top Down View](./misc/high_up.png)
 
