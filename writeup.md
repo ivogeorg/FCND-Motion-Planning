@@ -32,6 +32,12 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
 These scripts contain a basic planning implementation that includes...
 
+**NOTES 01:**
+1. Three major components:
+   1. The `udacidrone.Drone` API, which is a ["pass-through"](https://udacity.github.io/udacidrone/docs/drone-api.html).
+   2. The MAVLink protocol used to send messages back and forth between the `Drone` and the simulator.
+   3. The [FCND Simulator](https://github.com/udacity/FCND-Simulator), based on Unity, holds the SF city environment (**note:** there is discrepancy between this environment and the *colliders* file), contains a model of the drone **(where, how??? dynamics???)**, and uses PhysX to simulate realistic drone motion.
+
 And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
 ![Top Down View](./misc/high_up.png)
 
