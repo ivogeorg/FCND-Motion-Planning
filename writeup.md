@@ -30,7 +30,9 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 ### Explain the Starter Code
 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-These scripts contain a basic planning implementation that includes...
+The motion planning code, captured in these scripts, is one of three components, the other two being the FCND Unity-based simulator, which contains the city world and all the models and flight dynamics for the quadcopter drone, and the `udacidrone` API, which serves as a pass-through for the MAVLink messages between the motion planning code and the simulator. The simulated drone lives entirely inside the Unity environment and executes C# scripts to move through the simulator's city environment. The `udacidrone` API and the derived class of the `Drone` class define state-based drones, which transition from state to state as a result of commands sent from the derived classes to the simulator, defining callback functions for each transition. The simulator, in turn, sends updates of the position and flight dynamics back to the planning code. Both the commands from the derived `Drone` and the state updates from the simulator are sent as asynchronous MAVLink-protocol messages over TCP/IP, in this case through a specific port of the localhost address. 
+
+These scripts contain a basic planning implementation that includes 3 basic components, namely (1) the `Drone` subclass, which contains the motion planning, the `udacidrone` API, which serves as a pass-through between th
 
 <img src="assets/noun-notes.png" height="200" />   
 
