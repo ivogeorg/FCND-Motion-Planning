@@ -30,22 +30,26 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 ### Explain the Starter Code
 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-The motion planning code, captured in these scripts, is one of three components, the other two being the FCND Unity-based simulator, which contains the city world and all the models and flight dynamics for the quadcopter drone, and the `udacidrone` API, which serves as a pass-through for the MAVLink messages between the motion planning code and the simulator. The simulated drone lives entirely inside the Unity environment and executes C# scripts to move through the simulator's city environment. The `udacidrone` API and the derived class of the `Drone` class define state-based drones, which transition from state to state as a result of commands sent from the derived classes to the simulator, defining callback functions for each transition. The simulator, in turn, sends updates of the position and flight dynamics back to the planning code. Both the commands from the derived `Drone` and the state updates from the simulator are sent as asynchronous MAVLink-protocol messages over TCP/IP, in this case through a specific port of the localhost address. 
 
-These scripts contain a basic planning implementation that includes 3 basic components, namely (1) the `Drone` subclass, which contains the motion planning, the `udacidrone` API, which serves as a pass-through between th
+The motion planning code, captured in these scripts, is one of three components of the autonoumous quadcopter drone simulation, the other two being (1) the FCND Unity-based simulator, which contains the city world and all the models and flight dynamics for the quadcopter drone, and (2) the `udacidrone` API, which serves as a pass-through for the MAVLink messages between the motion planning code and the simulator. 
+
+The simulated drone lives entirely inside the Unity framework and executes C# scripts to move through the simulator's city environment. 
+
+The `udacidrone` API and the derived class of the `Drone` class define state-based drones, which transition from state to state as a result of commands sent from the derived classes to the simulator by having executed previously defined callback functions for each transition. The simulator, in turn, sends updates of the position and flight dynamics back to the planning code. 
+
+Both the commands from the derived `Drone` and the state updates from the simulator are sent as asynchronous MAVLink-protocol messages over TCP/IP, in this case through a specific port of the `localhost` address. 
+
+
 
 <img src="assets/noun-notes.png" height="200" />   
 
-1. Three major components:  
-   1. The `udacidrone.Drone` API, which is a ["pass-through"](https://udacity.github.io/udacidrone/docs/drone-api.html).  
-   2. The MAVLink protocol (over TCP to `localhost`) used to send messages back and forth between the `Drone` and the simulator.  
-   3. The [FCND Simulator](https://github.com/udacity/FCND-Simulator), based on Unity, holds the SF city environment (**note:** there is discrepancy between this environment and the *colliders* file), contains a model of the drone **(where, how??? dynamics???)**, and uses PhysX to simulate realistic drone motion.  
+**TODO:** A system diagram showing derived `Drone` with planning code (i.e. `MotionPlanning`), `udacidrone` API, simulator as a white box with simulated drone and city environment, MAVLink connection with two terminals, and prinicpal messages sreaming in each direction.
 
 <img src="assets/noun-question.png" height="200" />   
 
-1. Where is the actual (simulated) drone motion (up, down, etc.) generated? If in the simulator, how is the drone model actually encoded? What order model is it? (It might be good to start the robotics course to get a sense.)
-2. Is there any data in the raw sensor telemetry?
-
+1. Does the drone have a "camera"? The simulator shows the drone as seen from the side at a distance. Can the drone "take pictures" from its own perspective, and if yes, what is the orientation of the camera.
+2. Does the drone have a LIDAR? There is mention of `Lidar` in drone sensors C# scripts.
+3. Does the drone have a distance sensor?
 
 And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
 ![Top Down View](./misc/high_up.png)
@@ -81,6 +85,36 @@ This step is to add flexibility to the desired goal location. Should be able to 
 
 #### 5. Modify A* to include diagonal motion (or replace A* altogether)
 Minimal requirement here is to modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. Explain the code you used to accomplish this step.
+The additional "diagonal" actions are defined as follows in the `Action` class in `planning_utils.py`
+```python
+    WEST = (0, -1, 1)
+    EAST = (0, 1, 1)
+    NORTH = (-1, 0, 1)
+    SOUTH = (1, 0, 1)
+    SW = (1, -1, sqrt(2))
+    SE = (1, 1, sqrt(2))
+    NW = (-1, -1, sqrt(2))
+    NE = (-1, 1, sqrt(2))
+```
+and are used to filter the valid actions as follows in the `valid_actions` method
+```python
+    if x - 1 < 0 or grid[x - 1, y] == 1:
+        valid_actions.remove(Action.NORTH)
+        valid_actions.remove(Action.NW)
+        valid_actions.remove(Action.NE)
+    if x + 1 > n or grid[x + 1, y] == 1:
+        valid_actions.remove(Action.SOUTH)
+        valid_actions.remove(Action.SW)
+        valid_actions.remove(Action.SE)
+    if y - 1 < 0 or grid[x, y - 1] == 1:
+        valid_actions.remove(Action.WEST)
+        valid_actions.remove(Action.NW)
+        valid_actions.remove(Action.SW)
+    if y + 1 > m or grid[x, y + 1] == 1:
+        valid_actions.remove(Action.EAST)
+        valid_actions.remove(Action.NE)
+        valid_actions.remove(Action.SE)
+```
 
 #### 6. Cull waypoints 
 For this step you can use a collinearity test or ray tracing method like Bresenham. The idea is simply to prune your path of unnecessary waypoints. Explain the code you used to accomplish this step.
