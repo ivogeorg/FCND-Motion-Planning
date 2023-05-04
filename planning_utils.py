@@ -1,8 +1,7 @@
 from enum import Enum
 from queue import PriorityQueue
 import numpy as np
-import math
-
+from math import sqrt
 
 def create_grid(data, drone_altitude, safety_distance):
     """
