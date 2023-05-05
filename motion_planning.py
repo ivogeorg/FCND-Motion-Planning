@@ -1,6 +1,6 @@
 import argparse
 import time
-import msgpack                  # used for sending waypoints to simulator
+import msgpack                  # (ivogeorg) used for sending waypoints to simulator
 from enum import Enum, auto
 
 import numpy as np
@@ -40,11 +40,11 @@ class MotionPlanning(Drone):
         self.register_callback(MsgID.LOCAL_VELOCITY, self.velocity_callback)
         self.register_callback(MsgID.STATE, self.state_callback)
 
-    # TODO: 1. Parametrize the deadband radius for waypoints.
-    # TODO: 2. For different waypoints (e.g. graph nodes) pick a
-    #          different appropriate deadband radius. For tight
-    #          corners, it should be smaller; for straight streches
-    #          or smooth long turns, it should be larger.
+    # TODO (ivogeorg): 1. Parametrize the deadband radius for waypoints.
+    # TODO (ivogeorg): 2. For different waypoints (e.g. graph nodes) pick a
+    #                     different appropriate deadband radius. For tight
+    #                     corners, it should be smaller; for straight streches
+    #                     or smooth long turns, it should be larger.
     def local_position_callback(self):
         if self.flight_state == States.TAKEOFF:
             if -1.0 * self.local_position[2] > 0.95 * self.target_position[2]:
@@ -141,14 +141,17 @@ class MotionPlanning(Drone):
         grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
-        # Define starting point on the grid (this is just grid origin)
+        # Define starting point on the grid (this is just grid center)
+        # NOTE (ivogeorg): Actually, "origin" instead of "center"
         grid_start = (-north_offset, -east_offset)
         
-        # TODO: convert start position to current position rather than map origin
+        # TODO: convert start position to current position rather than map center
+        # NOTE (ivogeorg): Again, "map origin" instead of "map center"
         # It's very likely that the map origin contains an obstacle at the target altitude
         
         # Set goal as some arbitrary position on the grid
-        # TODO: Randomize but position away from obstacles at any altitude.
+        # TODO (ivogeorg): 
+        #       Randomize but position away from obstacles at any altitude.
         #       This may be done in a random sampling loop. Note that this may
         #       include courtyards which may require climbing to the top of
         #       the surrounding building and then descending into the courtyard.
@@ -157,20 +160,22 @@ class MotionPlanning(Drone):
         grid_goal = (-north_offset + 10, -east_offset + 10)
         
         # TODO: adapt to set goal as latitude / longitude position and convert
-        # TODO: There should probably be a check that lat/lon are within the
+        # TODO (ivogeorg): 
+        #       There should probably be a check that lat/lon are within the
         #       map. These may be added as command-line arguments.
 
-        # TODO: Run A* to find a path from start to goal
+        # Run A* to find a path from start to goal
         # TODO: Add diagonal motions with a cost of sqrt(2) to your A* implementation
         # or move to a different search space such as a graph (not done here)
         print('Local Start and Goal: ', grid_start, grid_goal)
         path, _ = a_star(grid, heuristic, grid_start, grid_goal)
         
         # TODO: prune path to minimize number of waypoints
-        
+
         # TODO: (if you're feeling ambitious): Try a different approach altogether!
-        # TODO: Probabilistic roadmap with receding-horizon local replanning and 
-        #       smoothing for v.2
+        # TODO (ivogeorg): 
+        #       Probabilistic roadmap with receding-horizon local replanning
+        #       and smoothing for v.2
 
         # Convert path to waypoints
         waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
@@ -191,14 +196,20 @@ class MotionPlanning(Drone):
 
         self.stop_log()
 
-# TODO: Command-line argument for planner version (1-grid, 2-graph, 3-receding horizon w/ replanning)
-# TODO: Version 3 built on 3 layers:
-#       1-approximate global, 
-#       2-receding horizon local replanning (incl. vertical search for couryard descent), 
-#       3-dynamic obstacle avoidance (incl. wind)
-# TODO: The now optional [Python controller](https://github.com/udacity/FCND-Controls) project from 
-#       the next FCND course (Controls) may contain a richer sensorium which can help with the
-#       implementation of the more advanced motion planning.
+# TODO (ivogeorg): 
+#       Command-line argument for planner version (1-grid, 2-graph, 3-receding 
+#       horizon w/ replanning)
+# TODO (ivogeorg): 
+#       Version 3 built on 3 layers:
+#       1 - approximate global, 
+#       2 - receding horizon local replanning (incl. vertical search for 
+#           couryard descent), 
+#       3 - dynamic obstacle avoidance (incl. wind)
+# TODO: (ivogeorg):
+#       The now optional [Python controller](https://github.com/udacity/FCND-Controls) 
+#       project from the next FCND course (Controls) may contain a richer 
+#       sensorium which can help with the implementation of the more advanced 
+#       motion planning.
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
