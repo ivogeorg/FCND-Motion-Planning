@@ -1,6 +1,6 @@
 import argparse
 import time
-import msgpack                  # (ivogeorg) used for sending waypoints to simulator
+import msgpack                  # (ivogeorg) To send waypoints to simulator
 from enum import Enum, auto
 
 import numpy as np
