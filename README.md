@@ -4,7 +4,7 @@ Planning in the complex urban environment of San Francisco using the `udacidrone
 
 ## Starter Code
 
-The overall architecture of this project is (i) user code contained in a sublclass of `udacidrone.Drone` class, (ii) the `udacidrone` API serving as an interface between high-level user code and the simulator, mediated over a two-way MAVLink message stream, and (iii) the Unity-based simulator that contains the urban world and the low-level dynamics and control of the drone.
+The overall architecture of this project is (i) user code contained in a sublclass of the `udacidrone.Drone` class, (ii) the `udacidrone` API serving as an interface between high-level user planning and control and the simulator, mediated via a two-way MAVLink protocol asynchronous message stream, and (iii) the Unity-based simulator that contains the urban world specification and the low-level dynamics and control model of the drone.
 
 ### 1. Planning Subclass
 
