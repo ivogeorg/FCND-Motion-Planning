@@ -24,7 +24,7 @@ class States(Enum):
 
 class MotionPlanning(Drone):
 
-    def __init__(self, connection):
+    def __init__(self, connection):  # TODO (ivogeorg): Global lat-lon start-target coord args!
         super().__init__(connection)
 
         self.target_position = np.array([0.0, 0.0, 0.0])
@@ -50,7 +50,7 @@ class MotionPlanning(Drone):
             if -1.0 * self.local_position[2] > 0.95 * self.target_position[2]:
                 self.waypoint_transition()
         elif self.flight_state == States.WAYPOINT:
-            if np.linalg.norm(self.target_position[0:2] - self.local_position[0:2]) < 1.0:
+            if np.linalg.norm(self.target_position[0:2] - self.local_position[0:2]) < 1.0: # TODO (ivogeorg): Why?
                 if len(self.waypoints) > 0:
                     self.waypoint_transition()
                 else:
@@ -59,7 +59,7 @@ class MotionPlanning(Drone):
 
     def velocity_callback(self):
         if self.flight_state == States.LANDING:
-            if self.global_position[2] - self.global_home[2] < 0.1:
+            if self.global_position[2] - self.global_home[2] < 0.1: # TODO (ig): Should land at target, not only home
                 if abs(self.local_position[2]) < 0.01:
                     self.disarming_transition()
 
@@ -125,12 +125,23 @@ class MotionPlanning(Drone):
         self.target_position[2] = TARGET_ALTITUDE
 
         # TODO: read lat0, lon0 from colliders into floating point values
+        # NOTE (ivogeorg): 
+        # Open file, and readline() into a list or strings.
+        # List comprehension with float("lat0 37.792480".split()[1]).
         
         # TODO: set home position to (lon0, lat0, 0)
+        # NOTE (ivogeorg): 
+        # This is self.global_home, so check what's expected (list or tuple).
+        # Check how home is used, esp. in relation to start and target.
 
         # TODO: retrieve current global position
+        # NOTE (ivogeorg): 
+        # This is self.global_position, so there should be a call to get it.
+        # This is in lat, lon.
  
         # TODO: convert to current local position using global_to_local()
+        # NOTE (ivogeorg): 
+        # This is self.local_position and is a triple.
         
         print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
                                                                          self.local_position))
@@ -142,11 +153,13 @@ class MotionPlanning(Drone):
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
-        # NOTE (ivogeorg): Actually, "origin" instead of "center"
+        # NOTE (ivogeorg): Actually, "origin" instead of "center", since
+        # create_grid returns [grid, int(north_min), int(east_min)]
         grid_start = (-north_offset, -east_offset)
         
         # TODO: convert start position to current position rather than map center
-        # NOTE (ivogeorg): Again, "map origin" instead of "map center"
+        # NOTE (ivogeorg): 
+        # Again, "map origin" instead of "map center". Btw, this makes no sense.
         # It's very likely that the map origin contains an obstacle at the target altitude
         
         # Set goal as some arbitrary position on the grid
@@ -157,12 +170,18 @@ class MotionPlanning(Drone):
         #       the surrounding building and then descending into the courtyard.
         #       Have to experiment with such goal positions. Also experiement
         #       with spiral descent into courtyards.
+        # TODO (ivogeorg):
+        #       Global (lat, lon) start and target should be read in from cmd line 
+        #       arguments or defaulted, in the constructor. They should be converted
+        #       to local and the nearest unobstructed grid points should be
+        #       identified. Grid points are local (north, east, altitude).
         grid_goal = (-north_offset + 10, -east_offset + 10)
         
         # TODO: adapt to set goal as latitude / longitude position and convert
         # TODO (ivogeorg): 
         #       There should probably be a check that lat/lon are within the
         #       map. These may be added as command-line arguments.
+        #       Again, this makes no sense.
 
         # Run A* to find a path from start to goal
         # DONE (ivogeorg): 
@@ -216,9 +235,14 @@ if __name__ == "__main__":
     parser.add_argument('--port', type=int, default=5760, help='Port number')
     parser.add_argument('--host', type=str, default='127.0.0.1', help="host address, i.e. '127.0.0.1'")
     args = parser.parse_args()
+    # TODO (ivogeorg):
+    #       Global (lat, lon) start and target should be read in from cmd line 
+    #       arguments or defaulted, in the constructor. They should be converted
+    #       to local and the nearest unobstructed grid points should be
+    #       identified. Grid points are local (north, east, altitude).
 
     conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)
-    drone = MotionPlanning(conn)
+    drone = MotionPlanning(conn)  # TODO (ivogeorg): Global lat-lon start-target coord args!
     time.sleep(1)
 
     drone.start()
