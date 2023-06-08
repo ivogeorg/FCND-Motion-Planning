@@ -57,7 +57,42 @@ The assets used to build the world are contained in the `AS Assets`, `CityMap`, 
 
 #### 4.2. Drone
 
-There are a several directories which contain visual assets for the drone model, namely `CoraTEST`, `Cora_KittyHawk`, and `Drone_Taxi`, but all of the low-level dynamics, sensing, positioning, navigation, messaging, and control are contained in the form of C# code files under the `Scripts` directory. For example, the main drone class is likely `Drones.QuadDrone` in `FCND-Simulator/Assets/Scripts/Drones/QuadDrone.cs` with `DroneInterface`, `DroneControllers`, `DroneVehicles`, and `DroneSensors` all included (`using`) and containing the details. As all derived classes in Unity, `QuadDrone` inherits from `MonoBehavior`, the base class of Unity.
+There are a several directories which contain visual assets for the drone model, namely `CoraTEST`, `Cora_KittyHawk`, and `Drone_Taxi`, but all of the low-level dynamics, sensing, positioning, navigation, messaging, and control are contained in the form of C# code files under the `Scripts` directory. For example, the main drone class is likely `Drones.QuadDrone` in `FCND-Simulator/Assets/Scripts/Drones/QuadDrone.cs` with `DroneInterface`, `DroneControllers`, `DroneVehicles`, and `DroneSensors` all included (`using`) and containing the details. As all derived classes in Unity, `QuadDrone` inherits from `MonoBehavior`, the base class of Unity. `QuadDrone` also implements the `IDrone` interface for drone control, defined in `FCND-Simulator/Assets/Scripts/DroneInterface/Drone.cs`.
 
 #### 4.3. Messaging & Communications
 
+Naturally, the simulator communicates over MAVLink with the high-level user code in `udacidrone.Drone` and its subclasses. A C# implementation of MAVLink is contained in `FCND-Simulator/Assets/Scripts/MAVLink`.
+
+## Code Sections
+
+### 1. Diagonal Actions
+
+The diagonal actions are implemented in the `planning_uitls.py` file, specifically:
+1. In the `Action` class:
+   ```
+      SW = (1, -1, sqrt(2))
+      SE = (1, 1, sqrt(2))
+      NW = (-1, -1, sqrt(2))
+      NE = (-1, 1, sqrt(2))
+   ```
+2. In the `valid_actions` method:
+   ```
+    if x - 1 < 0 or grid[x - 1, y] == 1:
+        valid_actions.remove(Action.NORTH)
+        valid_actions.remove(Action.NW)
+        valid_actions.remove(Action.NE)
+    if x + 1 > n or grid[x + 1, y] == 1:
+        valid_actions.remove(Action.SOUTH)
+        valid_actions.remove(Action.SW)
+        valid_actions.remove(Action.SE)
+    if y - 1 < 0 or grid[x, y - 1] == 1:
+        valid_actions.remove(Action.WEST)
+        valid_actions.remove(Action.NW)
+        valid_actions.remove(Action.SW)
+    if y + 1 > m or grid[x, y + 1] == 1:
+        valid_actions.remove(Action.EAST)
+        valid_actions.remove(Action.NE)
+        valid_actions.remove(Action.SE)
+   ```
+
+### 2. 
