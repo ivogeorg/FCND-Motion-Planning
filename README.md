@@ -95,6 +95,7 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
         valid_actions.remove(Action.SE)
    ```
 3. In the simulator, the zig-zag trajectory is now a straight line:
-   **TODO**
+   
+   <img src="/assets/Project2-diagonal-motion.png" width="450"/>  
 
 ### 2. 
