@@ -49,9 +49,15 @@ The information flowing between the simulator and the `Drone` class (or subclass
 
 ### 4. Simulator
 
+The [FCND-Simulator](https://github.com/udacity/FCND-Simulator) is based on [Unity](https://unity.com), a 3D gaming, design, and modeling engine. Most of the configurations and code that are specific to the simulator are contained in the [`Assets`](https://github.com/udacity/FCND-Simulator/tree/b662149ae52fee37372ce0e014d624cfe52229c8/Assets) directory.
+
 #### 4.1. World
 
+The assets used to build the world are contained in the `AS Assets`, `CityMap`, `Materials`, `Resources`, `Textures`, `Wrld` and other directories.
+
 #### 4.2. Drone
+
+There are a several directories which contain visual assets for the drone model, namely `CoraTEST`, `Cora_KittyHawk`, and `Drone_Taxi`, but all of the low-level dynamics, sensing, positioning, navigation, messaging, and control are contained in the form of C# code files under the `Scripts` directory. For example, the main drone class is likely `Drones.QuadDrone` in `FCND-Simulator/Assets/Scripts/Drones/QuadDrone.cs` with `DroneInterface`, `DroneControllers`, `DroneVehicles`, and `DroneSensors` all included (`using`) and containing the details. As all derived classes in Unity, `QuadDrone` inherits from `MonoBehavior`, the base class of Unity.
 
 #### 4.3. Messaging & Communications
 
