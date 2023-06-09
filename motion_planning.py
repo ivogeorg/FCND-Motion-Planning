@@ -200,7 +200,8 @@ class MotionPlanning(Drone):
         path, _ = a_star(grid, heuristic, grid_start, grid_goal)
         
         # TODO: prune path to minimize number of waypoints
-        # TODO (ivogeorg): Collinearity worked well. How does Brezenham prone?
+        # TODO (ivogeorg): Function prune_path() in planning_utils.py.
+        # Collinearity worked well. How does Brezenham prone?
 
         # TODO: (if you're feeling ambitious): Try a different approach altogether!
         # TODO (ivogeorg): 
