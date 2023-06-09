@@ -159,8 +159,15 @@ class MotionPlanning(Drone):
         
         # TODO: convert start position to current position rather than map center
         # NOTE (ivogeorg): 
-        # Again, "map origin" instead of "map center". Btw, this makes no sense.
+        # Again, "map origin" instead of "map center". This makes sense if there are
+        # several flights one after the other. The simulator keeps the "current
+        # location" of the drone, so the drone can start where it ended the previous
+        # flight. TODO (ivogeorg): Verify.
         # It's very likely that the map origin contains an obstacle at the target altitude
+
+        # TODO (ivogeorg): Funciton closest_grid_node_local() in planning_utils.py to make
+        # sure the drone stays within the grid. Using local coordinates (N, E), also
+        # minding the altitude. Args: north, east, altitude.
         
         # Set goal as some arbitrary position on the grid
         # TODO (ivogeorg): 
@@ -175,13 +182,15 @@ class MotionPlanning(Drone):
         #       arguments or defaulted, in the constructor. They should be converted
         #       to local and the nearest unobstructed grid points should be
         #       identified. Grid points are local (north, east, altitude).
-        grid_goal = (-north_offset + 10, -east_offset + 10)
+        grid_goal = (-north_offset + 10, -east_offset + 10)  # TODO (ivogeorg): Use closest_grid_node()
         
         # TODO: adapt to set goal as latitude / longitude position and convert
         # TODO (ivogeorg): 
         #       There should probably be a check that lat/lon are within the
         #       map. These may be added as command-line arguments.
         #       Again, this makes no sense.
+        # TODO (ivogeorg): Define function closest_grid_node_global() taking lat, lon
+        # and reuse closest_grid_node_local()
 
         # Run A* to find a path from start to goal
         # DONE (ivogeorg): 
@@ -191,11 +200,12 @@ class MotionPlanning(Drone):
         path, _ = a_star(grid, heuristic, grid_start, grid_goal)
         
         # TODO: prune path to minimize number of waypoints
+        # TODO (ivogeorg): Collinearity worked well. How does Brezenham prone?
 
         # TODO: (if you're feeling ambitious): Try a different approach altogether!
         # TODO (ivogeorg): 
         #       Probabilistic roadmap with receding-horizon local replanning
-        #       and smoothing for v.2
+        #       and smoothing (v.2)
 
         # Convert path to waypoints
         waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
@@ -218,9 +228,9 @@ class MotionPlanning(Drone):
 
 # TODO (ivogeorg): 
 #       Command-line argument for planner version (1-grid, 2-graph, 3-receding 
-#       horizon w/ replanning)
+#       horizon w/ replanning) (v.2)
 # TODO (ivogeorg): 
-#       Version 3 built on 3 layers:
+#       Version 3 built on 3 layers (v.3):
 #       1 - approximate global, 
 #       2 - receding horizon local replanning (incl. vertical search for 
 #           couryard descent), 
@@ -229,7 +239,7 @@ class MotionPlanning(Drone):
 #       The now optional [Python controller](https://github.com/udacity/FCND-Controls) 
 #       project from the next FCND course (Controls) may contain a richer 
 #       sensorium which can help with the implementation of the more advanced 
-#       motion planning.
+#       motion planning. (v.2)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=5760, help='Port number')
@@ -239,10 +249,10 @@ if __name__ == "__main__":
     #       Global (lat, lon) start and target should be read in from cmd line 
     #       arguments or defaulted, in the constructor. They should be converted
     #       to local and the nearest unobstructed grid points should be
-    #       identified. Grid points are local (north, east, altitude).
+    #       identified. Grid points are local (north, east, altitude). (v.2)
 
     conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)
-    drone = MotionPlanning(conn)  # TODO (ivogeorg): Global lat-lon start-target coord args!
+    drone = MotionPlanning(conn)  # TODO (ivogeorg): Global lat-lon start-target coord args! (v.2)
     time.sleep(1)
 
     drone.start()
