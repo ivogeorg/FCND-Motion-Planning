@@ -20,7 +20,7 @@ At a high-level, the drone is defined as a state machine, with a `state_callback
 
 #### 1.2. File `motion_utils.py`
 
-The file contains helper methods for creating and navigating a grid-based set of trajectories:
+The file contains helper methods for creating and navigating a grid-based configuration space:
 
 `create_grid` creates a 2D grid based on the colliders data at a certain drone height and with a certain standoff safety distance.
 
@@ -75,7 +75,7 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
       NW = (-1, -1, sqrt(2))
       NE = (-1, 1, sqrt(2))
    ```
-2. In the `valid_actions` method:
+2. In the `valid_actions` method, whenever a principal direction is removed, the diagonal directions having it as a component are also removed:
    ```
     if x - 1 < 0 or grid[x - 1, y] == 1:
         valid_actions.remove(Action.NORTH)
@@ -98,4 +98,9 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
    
    <img src="/assets/Project2-diagonal-motion.png" width="450"/>  
 
-### 2. 
+### 2. *Notes on goal given in [lat, lon]*
+
+1. If a node is not given explicitly, then the closest node has to be found. This is `target_ini`.
+2. If `target_ini` has an obstacle, the closest non-obstructed node has to be found. This is `target_clear`. A modified `a_star_clear` can be used to find it.
+3. If `target_ini` is clear, it is set as `goal`, otherwise `target_clear` is.
+4. `a_star` can be used as usual with `start` and `goal`.
