@@ -170,6 +170,7 @@ class MotionPlanning(Drone):
         # minding the altitude. Args: north, east, altitude.
         
         # Set goal as some arbitrary position on the grid
+        # NOTE (ivogeorg): Position in the GRID! So, pick a node by an index tuple.
         # TODO (ivogeorg): 
         #       Randomize but position away from obstacles at any altitude.
         #       This may be done in a random sampling loop. Note that this may
@@ -185,6 +186,7 @@ class MotionPlanning(Drone):
         grid_goal = (-north_offset + 10, -east_offset + 10)  # TODO (ivogeorg): Use closest_grid_node()
         
         # TODO: adapt to set goal as latitude / longitude position and convert
+        # NOTE (ivogeorg): This is a more advanced version, since it is not necessarily a node!
         # TODO (ivogeorg): 
         #       There should probably be a check that lat/lon are within the
         #       map. These may be added as command-line arguments.
