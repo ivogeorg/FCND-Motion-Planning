@@ -175,13 +175,14 @@ class MotionPlanning(Drone):
         # local coordinates of the grid nodes. We only have information about whether
         # they are obstructed or not (at the prescribed altitude).
         
-        # TODO: convert start position to current position rather than map center
+        # DONE: convert start position to current position rather than map center
         # NOTE (ivogeorg): 
         # Again, "map origin" instead of "map center". This makes sense if there are
         # several flights one after the other. The simulator keeps the "current
         # location" of the drone, so the drone can start where it ended the previous
         # flight. Verified with starter code and "zig-zag" trajectory.
-        # It's very likely that the map origin contains an obstacle at the target altitude
+        self.set_home_as_current_position()                                 # lon, lat, alt
+        grid_start = (self.current_position[0], self.current_position[1])   # nor, east
 
         # TODO (ivogeorg): Funciton closest_grid_node_local() in planning_utils.py to make
         # sure the drone stays within the grid. Using local coordinates (N, E), also
