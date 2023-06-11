@@ -164,29 +164,36 @@ class MotionPlanning(Drone):
         
         # Define a grid for a particular altitude and safety margin around obstacles
         grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        print(grid)
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
         # NOTE (ivogeorg): Actually, "origin" instead of "center", since
         # create_grid returns [grid, int(north_min), int(east_min)]
         grid_start = (-north_offset, -east_offset)
+        # NOTE (ivogeorg): Interestingly, we don't actually know the exact global or
+        # local coordinates of the grid nodes. We only have information about whether
+        # they are obstructed or not (at the prescribed altitude).
         
         # TODO: convert start position to current position rather than map center
         # NOTE (ivogeorg): 
         # Again, "map origin" instead of "map center". This makes sense if there are
         # several flights one after the other. The simulator keeps the "current
         # location" of the drone, so the drone can start where it ended the previous
-        # flight. TODO (ivogeorg): Verify.
+        # flight. Verified with starter code and "zig-zag" trajectory.
         # It's very likely that the map origin contains an obstacle at the target altitude
 
         # TODO (ivogeorg): Funciton closest_grid_node_local() in planning_utils.py to make
         # sure the drone stays within the grid. Using local coordinates (N, E), also
         # minding the altitude. Args: north, east, altitude.
         
-        # Set goal as some arbitrary position on the grid
+        # TODO: Set goal as some arbitrary position on the grid
         # NOTE (ivogeorg): Position in the GRID! So, pick a node by an index tuple.
-        # NOTE (ivogeorg): Actually, start and target/goal dont' have to be grid
-        # nodes for a_star to find a trajectory composed of intermediate grid nodes.
+        # NOTE (ivogeorg): When a_star as originally written in mapping_utils is
+        # given a grid, it can only find paths between two grid nodes. Start and
+        # goal positions off the grid cannot be on the path, unless a_star is
+        # modified. a_star can also work with a graph, as long as start and goal
+        # are graph nodes.
         # TODO (ivogeorg): 
         #       Randomize but position away from obstacles at any altitude.
         #       This may be done in a random sampling loop. Note that this may
@@ -198,7 +205,7 @@ class MotionPlanning(Drone):
         #       Global (lat, lon) start and target should be read in from cmd line 
         #       arguments or defaulted, in the constructor. They should be converted
         #       to local and the nearest unobstructed grid points should be
-        #       identified. Grid points are local (north, east, altitude).
+        #       identified. Grid points are local (north, east, altitude). (v.2)
         grid_goal = (-north_offset + 10, -east_offset + 10)  # TODO (ivogeorg): Use closest_grid_node()
         
         # TODO: adapt to set goal as latitude / longitude position and convert
