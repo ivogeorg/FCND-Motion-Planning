@@ -165,7 +165,7 @@ class MotionPlanning(Drone):
         # Define a grid for a particular altitude and safety margin around obstacles
         grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("Grid shape: ", grid.shape)
-        print("Clear node count:", len(grid_clear_nodes.size))
+        print("Clear node count:", len(grid_clear_nodes))
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
@@ -176,14 +176,14 @@ class MotionPlanning(Drone):
         # local coordinates of the grid nodes. We only have information about whether
         # they are obstructed or not (at the prescribed altitude).
         
-        # DONE: convert start position to current position rather than map center
+        # TODO: convert start position to current position rather than map center
         # NOTE (ivogeorg): 
         # Again, "map origin" instead of "map center". This makes sense if there are
         # several flights one after the other. The simulator keeps the "current
         # location" of the drone, so the drone can start where it ended the previous
         # flight. Verified with starter code and "zig-zag" trajectory.
-        self.set_home_as_current_position()                                 # lon, lat, alt
-        grid_start = (self.current_position[0], self.current_position[1])   # nor, east
+#        self.set_home_as_current_position()                                 # lon, lat, alt
+#        grid_start = (self.local_position[0], self.local_position[1])   # nor, east
 
         # TODO (ivogeorg): Funciton closest_grid_node_local() in planning_utils.py to make
         # sure the drone stays within the grid. Using local coordinates (N, E), also
