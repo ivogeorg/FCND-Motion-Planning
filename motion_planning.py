@@ -163,8 +163,9 @@ class MotionPlanning(Drone):
         data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
         
         # Define a grid for a particular altitude and safety margin around obstacles
-        grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
-        print(grid)
+        grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        print("Grid shape: ", grid.shape)
+        print("Clear node count:", len(grid_clear_nodes.size))
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
