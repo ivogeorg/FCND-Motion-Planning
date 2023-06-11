@@ -124,24 +124,38 @@ class MotionPlanning(Drone):
 
         self.target_position[2] = TARGET_ALTITUDE
 
-        # TODO: read lat0, lon0 from colliders into floating point values
+        # DONE (ivogeorg): read lat0, lon0 from colliders into floating point values
         # NOTE (ivogeorg): 
-        # Open file, and readline() into a list or strings.
-        # List comprehension with float("lat0 37.792480".split()[1]).
+        # First line of colliders file is "lat0 37.792480, lon0 -122.397450".
+        latlon = ""
+        with open("colliders.csv", "r") as f:
+            latlon = f.readline()
+        lat0, lon0 = latlon.split(", ")
+        lat0 = float(lat0.split()[1])
+        lon0 = float(lon0.split()[1])
+        # TODO (ivogeorg): What are these coordinates?
         
-        # TODO: set home position to (lon0, lat0, 0)
+        # DONE: set home position to (lon0, lat0, 0)
         # NOTE (ivogeorg): 
-        # This is self.global_home, so check what's expected (list or tuple).
+        # global_home is a property of udacidrone.Drone
+        # so self.global_home = np.array([lon0, lat0, 0.0]) is invalid.
+        # TODO (ivogeorg): 
         # Check how home is used, esp. in relation to start and target.
+        # NOTE (ivogeorg):
+        # udacidrone has a method set_home_position and it is in 
+        # global coordinates.
+        self.set_home_position(lon0, lat0, 0.0)
 
-        # TODO: retrieve current global position
+        # DONE: retrieve current global position
         # NOTE (ivogeorg): 
-        # This is self.global_position, so there should be a call to get it.
-        # This is in lat, lon.
+        # global_position is a property of of udacidrone.Drone
+        # This is in lon, lat, alt (or up).
  
-        # TODO: convert to current local position using global_to_local()
+        # DONE: convert to current local position using global_to_local()
         # NOTE (ivogeorg): 
-        # This is self.local_position and is a triple.
+        # local_position is also a property of udacidrone.Drone, so it is
+        # not settable and is maintained along with global_position.
+        # This is in north, east, down.
         
         print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
                                                                          self.local_position))
