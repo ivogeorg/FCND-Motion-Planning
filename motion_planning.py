@@ -193,7 +193,7 @@ class MotionPlanning(Drone):
         # given a grid, it can only find paths between two grid nodes. Start and
         # goal positions off the grid cannot be on the path, unless a_star is
         # modified. a_star can also work with a graph, as long as start and goal
-        # are graph nodes.
+        # are graph nodes. Of course, the drone can freely fly off the grid!
         # TODO (ivogeorg): 
         #       Randomize but position away from obstacles at any altitude.
         #       This may be done in a random sampling loop. Note that this may
