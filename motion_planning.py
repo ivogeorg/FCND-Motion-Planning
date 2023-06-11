@@ -185,6 +185,8 @@ class MotionPlanning(Drone):
         
         # Set goal as some arbitrary position on the grid
         # NOTE (ivogeorg): Position in the GRID! So, pick a node by an index tuple.
+        # NOTE (ivogeorg): Actually, start and target/goal dont' have to be grid
+        # nodes for a_star to find a trajectory composed of intermediate grid nodes.
         # TODO (ivogeorg): 
         #       Randomize but position away from obstacles at any altitude.
         #       This may be done in a random sampling loop. Note that this may
