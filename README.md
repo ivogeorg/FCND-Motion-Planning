@@ -115,8 +115,9 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 6. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
 7. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
 8. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
-9. What is the proper way to randomize the goals for the above expression?
-10. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
+9. What is the relationship between the path grid nodes and the waypoints? It looks like there is a 1-to-1 correspondence with a constant N-E offset for the grid nodes.
+10. What is the proper way to randomize the goals for the goal expression?
+11. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
 
 
 #### 2.2. *Questions on the simulator*
