@@ -121,6 +121,6 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 
 #### 2.2. *Questions on the simulator*
 
-1. What are the parameters in the simulator? Are they settable?
-2. Can the perspective relative to the drone be changed? Does it have to be relative to the drone?
+1. ~What are the parameters in the simulator? Are they settable?~ PID coefficients, max values, etcetera drone dynamics. Nothing about the view.
+2. Can the simulator view perspective relative to the drone be changed? Does it have to be relative to the drone?
 3. 
