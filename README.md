@@ -104,3 +104,23 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 2. If `target_ini` has an obstacle, the closest non-obstructed node has to be found. This is `target_clear`. A modified `a_star_clear` can be used to find it.
 3. If `target_ini` is clear, it is set as `goal`, otherwise `target_clear` is.
 4. `a_star` can be used as usual with `start` and `goal`.
+
+#### 2.1. *Questions on start and goal located on the grid*
+
+1. Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`? 
+2. Why are the offsets integers?
+3. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
+4. Why does the grid have to be flipped? 
+5. What does the simulator show and how does that correspond to the grid? *Any way to display all the clear nodes on the grid?*
+6. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
+7. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
+8. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
+9. What is the proper way to randomize the goals for the above expression?
+10. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
+
+
+#### 2.2. *Questions on the simulator*
+
+1. What are the parameters in the simulator? Are they settable?
+2. Can the perspective relative to the drone be changed? Does it have to be relative to the drone?
+3. 
