@@ -4,6 +4,7 @@ import msgpack                  # (ivogeorg) To send waypoints to simulator
 from enum import Enum, auto
 
 import numpy as np
+from numpy.random import randint
 
 from planning_utils import a_star, heuristic, create_grid
 from udacidrone import Drone
@@ -110,6 +111,7 @@ class MotionPlanning(Drone):
         print("manual transition")
         self.stop()
         self.in_mission = False
+        print("Local position: ", self.local_position)
 
     def send_waypoints(self):
         print("Sending waypoints to simulator ...")
@@ -157,15 +159,16 @@ class MotionPlanning(Drone):
         # not settable and is maintained along with global_position.
         # This is in north, east, down.
         
-        print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
-                                                                         self.local_position))
+        print('Global home {0}, global position {1}, local position {2}'.format(self.global_home, self.global_position, self.local_position))
         # Read in obstacle map
         data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
+        print("Colliders data shape: ", data.shape)
         
         # Define a grid for a particular altitude and safety margin around obstacles
         grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("Grid shape: ", grid.shape)
         print("Clear node count:", len(grid_clear_nodes))
+        print("First 10: ", grid_clear_nodes[:10])
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
@@ -208,7 +211,15 @@ class MotionPlanning(Drone):
         #       arguments or defaulted, in the constructor. They should be converted
         #       to local and the nearest unobstructed grid points should be
         #       identified. Grid points are local (north, east, altitude). (v.2)
+        random_clear = randint(0, len(grid_clear_nodes))
         grid_goal = (-north_offset + 10, -east_offset + 10)  # TODO (ivogeorg): Use closest_grid_node()
+#        print("Random clear index: ", random_clear)
+#        print("Node coords at index: ", grid_clear_nodes[random_clear])
+#        print("N coord at index: ", grid_clear_nodes[random_clear][0])
+#        print("E coord at index: ", grid_clear_nodes[random_clear][1])
+
+#        grid_goal = (-north_offset + grid_clear_nodes[random_clear][0], -east_offset + grid_clear_nodes[random_clear][1])  # TODO (ivogeorg): Use closest_grid_node()
+#        grid_goal = (-north_offset + 0, -east_offset + 56)  # TODO (ivogeorg): Use closest_grid_node()
         
         # TODO: adapt to set goal as latitude / longitude position and convert
         # NOTE (ivogeorg): This is a more advanced version, since it is not necessarily a node!

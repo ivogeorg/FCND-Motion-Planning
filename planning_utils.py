@@ -41,8 +41,8 @@ def create_grid(data, drone_altitude, safety_distance):
     # List of clear grid coordinates (to use for randomizing goal nodes)
     grid_clear_nodes = []
     for index, ob in np.ndenumerate(grid):
-    	if ob == 0:
-        	grid_clear_nodes.append((index[0], index[1]))  # (n, e)
+        if ob == 0:
+            grid_clear_nodes.append(index)  # (n, e)
 
     return grid, int(north_min), int(east_min), grid_clear_nodes
 
