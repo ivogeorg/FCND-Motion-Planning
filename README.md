@@ -111,7 +111,7 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 2. Why are the offsets integers?
 3. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
 4. Why does the grid have to be flipped? 
-5. What does the simulator show and how does that correspond to the grid? *Any way to display all the clear nodes on the grid?*
+5. Any way to display all the clear nodes on the grid?
 6. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
 7. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
 8. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
@@ -122,5 +122,6 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 #### 2.2. *Questions on the simulator*
 
 1. ~What are the parameters in the simulator? Are they settable?~ PID coefficients, max values, etcetera drone dynamics. Nothing about the view.
-2. Can the simulator view perspective relative to the drone be changed? Does it have to be relative to the drone?
-3. 
+2. ~Can the simulator view perspective relative to the drone be changed? Does it have to be relative to the drone?~ The controls work fine and the whole world can be viewed from above. The perspective can be changed with **Pan Camera** and can be zoomed. The camera can also be tilted, yawed, and zoomed. See next question.
+3. Is there a drone camera view separate from the simulator observer view?
+4. What does the simulator show? How does that correspond to the grid? *There isn't any city or a b-n-w grid view of the city when inspected from the drone in the "Motion Planning" simulator view. There is just a large square of "pavement".*
