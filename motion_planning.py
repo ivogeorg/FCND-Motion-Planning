@@ -174,7 +174,7 @@ class MotionPlanning(Drone):
         # Define starting point on the grid (this is just grid center)
         # NOTE (ivogeorg): Actually, "origin" instead of "center", since
         # create_grid returns [grid, int(north_min), int(east_min)]
-        grid_start = (-north_offset, -east_offset)
+        grid_start = (-north_offset + 20, -east_offset)
         # NOTE (ivogeorg): Interestingly, we don't actually know the exact global or
         # local coordinates of the grid nodes. We only have information about whether
         # they are obstructed or not (at the prescribed altitude).
@@ -212,7 +212,7 @@ class MotionPlanning(Drone):
         #       to local and the nearest unobstructed grid points should be
         #       identified. Grid points are local (north, east, altitude). (v.2)
         random_clear = randint(0, len(grid_clear_nodes))
-        grid_goal = (-north_offset + 10, -east_offset + 10)  # TODO (ivogeorg): Use closest_grid_node()
+        grid_goal = (-north_offset + 30, -east_offset + 5)  # TODO (ivogeorg): Use closest_grid_node()
 #        print("Random clear index: ", random_clear)
 #        print("Node coords at index: ", grid_clear_nodes[random_clear])
 #        print("N coord at index: ", grid_clear_nodes[random_clear][0])
