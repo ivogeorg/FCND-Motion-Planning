@@ -67,9 +67,10 @@ Naturally, the simulator communicates over MAVLink with the high-level user code
 
 There is a simulator artifact in the form of an "elevated" section of Market Street, between Market and Front/Fremont and Market and Spear. It is 3 meters tall and has "entrances" at the street level (but they don't appear consistently across simulator resets) as if it is a galleria. I know for sure there isn't anything like that there. This might be an unfinished attempt to model the underground Embarcadero BART and the MUNI Market & Main stations. Here are screenshots showing the two ends of the artifact:
 
-<img src="/assets/FCND-Planning-Reason-for-overshoot-at-start.png" width="450"/>  
-
-<img src="/assets/FCND-Planning-Elevated-Mkt-St.png" width="450"/>  
+| Street Level | Bird's Eye View |
+| --- | --- |
+| <img src="/assets/FCND-Planning-Reason-for-overshoot-at-start.png" width="450"/>  | <img src="/assets/FCND-Planning-Mrkt-St-Anomaly-1.png" width="450"/> |
+| <img src="/assets/FCND-Planning-Elevated-Mkt-St.png" width="450"/>  | <img src="/assets/FCND-Planning-Mrkt-St-Anomaly-2.png" width="450"/> |
 
 This artifact acts like an obstacle and causes the drone centered in the middle of the colliders map data `(lon0, lat0, 0)` to overshoot at start as if passing through an obstacle (not sure how this is handled in Unity). Zero altitude is definitely "inside" the "galleria" but the drone cannot return to it. The drone, if above the "roof" of the "galleria", cannot properly land, disarm, and turn off guidance, since it cannot meet the criterion of (approximately) zero elevation. 
 
