@@ -75,7 +75,7 @@ This artifact acts like an obstacle and causes the drone centered in the middle 
 
 The map data does not show any obstacle at the same location and anyway the default flight elevation of 5 meters can avoid it altogether. This only affects taking off from and landing anywhere in the footprint of the "galleria".
 
-It's interesting to point out that since the 2D is for a certain altitude, a clear (white or magenta) region is not necessarily at zero altitude, so the drone might not be able to land there w/o modification of the `local_position_callback` code.
+It's interesting to point out that since the 2D is for a certain altitude, a clear (white or magenta) region is not necessarily at zero altitude, so the drone might not be able to land there w/o modification of the [`velocity_callback`](/motion_planning.py#L61) code.
 
 ## Code Sections
 
