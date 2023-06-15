@@ -123,17 +123,25 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 #### 2.1. *Questions on the grid*
 
 1. What are the coordinate numbers in the [colliders file](no-latlon-colliders.csv)? Since there are both negative and positive float values for the first two columns, these are neither global (which should be a positive latitude and a negative longitude) nor local coordinates (which should have north and east both positive).
-2. Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`? 
-3. Why are the offsets integers?
-4. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
-5. Why does the grid have to be flipped? 
-6. ~Any way to display all the clear nodes on the grid?~ Yes, though there will be many and very dense. See this [notebook](/notebooks/A-Star-City.ipynb).
-7. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
-8. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
-9. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
-10. What is the relationship between the path grid nodes and the waypoints? It looks like there is a 1-to-1 correspondence with a constant N-E offset for the grid nodes.
-11. What is the proper way to randomize the goals for the goal expression?
-12. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
+   1. Note that `global_to_local` takes two arguments, `global_position` and `global_home` so essentially the local coordinates are returned relative to the **home position**, which is what the significance of `global_home` and `set_home_position` is. This might provide a clue to the mapping of local positions to grid and to the role of the offsets (see below).
+   2. Global coordinates of the 4 corners (approximate (lon, lat)): SW (-122.4024, 37.7897), NW (-122.4024, 37.7979), NE (-122.3921, 37.7979), SE (-122.3921, 37.7897).
+   3. The center of the grid is: C (-122.3975, 37.7925).
+   4. Running them with zero altitude through `global_to_local` with C as `global_home` gives:
+      1. SW [-313.42789948, -429.43659388,   -0.0]
+      2. NW [ 596.35963319, -435.25197039,   -0.0]
+      3. NE [ 602.20641541,  471.54922346,   -0.0]
+      4. SE [-307.58154996,  477.46484185,   -0.0]
+3. Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`? 
+4. Why are the offsets integers?
+5. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
+6. Why does the grid have to be flipped? 
+7. ~Any way to display all the clear nodes on the grid?~ Yes, though there will be many and very dense. See this [notebook](/notebooks/A-Star-City.ipynb).
+8. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
+9. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
+10. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
+11. What is the relationship between the path grid nodes and the waypoints? It looks like there is a 1-to-1 correspondence with a constant N-E offset for the grid nodes.
+12. What is the proper way to randomize the goals for the goal expression?
+13. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
 
 
 #### 2.2. *Questions on the simulator*
