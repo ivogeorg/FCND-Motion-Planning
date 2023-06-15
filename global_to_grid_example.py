@@ -13,7 +13,12 @@ grid, north_offset, east_offset = create_grid(data, drone_altitude, 1)
 
 # Convert global position to local position
 global_position = (37.792480, -122.397450, 0)
-local_position = global_to_local(global_position, self.global_home)
+print("Global position: ", global_position)
+global_home = (37.792480, -122.397450, 0)
+print("Global home: ", global_home)
+local_position = global_to_local(global_position, global_home)
 
 # Calculate row and column indices of grid cell
 grid_position = (int(np.ceil(local_position[0] - north_offset)), int(np.ceil(local_position[1] - east_offset)))
+
+print("Grid position: ", grid_position)
