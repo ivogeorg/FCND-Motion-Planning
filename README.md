@@ -75,6 +75,8 @@ This artifact acts like an obstacle and causes the drone centered in the middle 
 
 The map data does not show any obstacle at the same location and anyway the default flight elevation of 5 meters can avoid it altogether. This only affects taking off from and landing anywhere in the footprint of the "galleria".
 
+It's interesting to point out that since the 2D is for a certain altitude, a clear (white or magenta) region is not necessarily at zero altitude, so the drone might not be able to land there w/o modification of the `local_position_callback` code.
+
 ## Code Sections
 
 ### 1. Diagonal Actions
@@ -117,19 +119,20 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 3. If `target_ini` is clear, it is set as `goal`, otherwise `target_clear` is.
 4. `a_star` can be used as usual with `start` and `goal`.
 
-#### 2.1. *Questions on start and goal located on the grid*
+#### 2.1. *Questions on the grid*
 
-1. Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`? 
-2. Why are the offsets integers?
-3. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
-4. Why does the grid have to be flipped? 
-5. Any way to display all the clear nodes on the grid?
-6. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
-7. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
-8. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
-9. What is the relationship between the path grid nodes and the waypoints? It looks like there is a 1-to-1 correspondence with a constant N-E offset for the grid nodes.
-10. What is the proper way to randomize the goals for the goal expression?
-11. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
+1. What are the coordinate numbers in the [colliders file](no-latlon-colliders.csv)? Since there are both negative and positive float values for the first two columns, these are neither global (which should be a positive latitude and a negative longitude) nor local coordinates (which should have north and east both positive).
+2. Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`? 
+3. Why are the offsets integers?
+4. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
+5. Why does the grid have to be flipped? 
+6. ~Any way to display all the clear nodes on the grid?~ Yes, though there will be many and very dense. See this [notebook](/notebooks/A-Star-City.ipynb).
+7. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
+8. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
+9. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
+10. What is the relationship between the path grid nodes and the waypoints? It looks like there is a 1-to-1 correspondence with a constant N-E offset for the grid nodes.
+11. What is the proper way to randomize the goals for the goal expression?
+12. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
 
 
 #### 2.2. *Questions on the simulator*
@@ -137,4 +140,4 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 1. ~What are the parameters in the simulator? Are they settable?~ PID coefficients, max values, etcetera drone dynamics. Nothing about the view.
 2. ~Can the simulator view perspective relative to the drone be changed? Does it have to be relative to the drone?~ The controls work fine and the whole world can be viewed from above. The perspective can be changed with **Pan Camera** and can be zoomed. The camera can also be tilted, yawed, and zoomed. See next question.
 3. Is there a drone camera view separate from the simulator observer view?
-4. What does the simulator show? How does that correspond to the grid? *There isn't any city or a b-n-w grid view of the city when inspected from the drone in the "Motion Planning" simulator view. There is just a large square of "pavement".*
+4. ~What does the simulator show? How does that correspond to the grid?~ The simulator has two reset states which alternate on pressing Shift-R. One shows the city, the other note. The portion of the city almost exactly corresponds to the colliders. There might be some discrepancy, which is usually handled by a 3-meter safety distance.
