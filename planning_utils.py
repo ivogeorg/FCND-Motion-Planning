@@ -39,12 +39,12 @@ def create_grid(data, drone_altitude, safety_distance):
             grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
     
     # List of clear grid coordinates (to use for randomizing goal nodes)
-    grid_clear_nodes = []
-    for index, ob in np.ndenumerate(grid):
-        if ob == 0:
-            grid_clear_nodes.append(index)  # (n, e)
+#     grid_clear_nodes = []
+#     for index, ob in np.ndenumerate(grid):
+#         if ob == 0:
+#             grid_clear_nodes.append(index)  # (n, e)
 
-    return grid, int(north_min), int(east_min), grid_clear_nodes
+    return grid, int(north_min), int(east_min) #, grid_clear_nodes
 
 
 # Assume all actions cost the same.
