@@ -143,6 +143,9 @@ def a_star(grid, h, start, goal):
                     queue.put((queue_cost, next_node))
              
     if found:
+        print('**********************')
+        print('     Found path!      ')
+        print('**********************') 
         # retrace steps
         n = goal
         path_cost = branch[n][0]
