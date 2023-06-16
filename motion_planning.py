@@ -142,7 +142,7 @@ class MotionPlanning(Drone):
         # The home position is used by `udacidrone.frame_utils.global_to_local`
         # to convert global (lon, lat, up) coordinates to local (nor, east, down)
         # coordinates relative to the home location.
-        self.set_home_position(lon0, lat0, 3.05)
+        self.set_home_position(lon0, lat0, 3.2)
 
         # DONE: retrieve current global position
         # NOTE (ivogeorg): 
