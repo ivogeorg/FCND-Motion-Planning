@@ -161,7 +161,8 @@ class MotionPlanning(Drone):
         print("Colliders data shape: ", data.shape)
         
         # Define a grid for a particular altitude and safety margin around obstacles
-        grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+#         grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
