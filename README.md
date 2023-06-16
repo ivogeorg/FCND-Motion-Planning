@@ -78,7 +78,13 @@ Here is a rare view of the galleria with gates:
 
 Incidentally, the same can be seen at the bottom of a building on the North edge of the world, looking South from "outside" the world.
 
-This artifact acts like an obstacle and causes the drone centered in the middle of the colliders map data `(lon0, lat0, 0)` to overshoot at start as if passing through an obstacle (not sure how this is handled in Unity). Zero altitude is definitely "inside" the "galleria" but the drone cannot return to it. The drone, if above the "roof" of the "galleria", cannot properly land, disarm, and turn off guidance, since it cannot meet the criterion of (approximately) zero elevation. 
+This artifact acts like an obstacle and causes the drone centered in the middle of the colliders map data `(lon0, lat0, 0)` to overshoot at start as if passing through an obstacle (not sure how this is handled in Unity). Zero altitude is definitely "inside" the "galleria" but the drone cannot return to it. The drone, if above the "roof" of the "galleria", cannot properly land, disarm, and turn off guidance, since it cannot meet the criterion of (approximately) zero elevation. Here is a sequence of screenshots showing the overshoot:
+
+| Below the roof | Above the roof |
+| --- | --- |
+| <img src="/assets/Overshoot-1.png" width="450" /> | <img src="/assets/Overshoot-4.png" width="450" /> | 
+| <img src="/assets/Overshoot-2.png" width="450" /> | <img src="/assets/Overshoot-5.png" width="450" /> | 
+| <img src="/assets/Overshoot-3.png" width="450" /> | <img src="/assets/Overshoot-6.png" width="450" /> | 
 
 The map data does not show any obstacle at the same location and anyway the default flight elevation of 5 meters can avoid it altogether. This only affects taking off from and landing anywhere in the footprint of the "galleria". Unfortunately, the simulator always initializes the drone at the center of the city, which is inside the galleria anomaly. So, the first flight will be affected, but as long as the drone does not try to land on the roof of the galleria, the rest will be fine. A bird's eye inspection of the rest of the city shows no similar anomalies.
 
