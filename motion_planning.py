@@ -205,7 +205,7 @@ class MotionPlanning(Drone):
         #       arguments or defaulted, in the constructor. They should be converted
         #       to local and the nearest unobstructed grid points should be
         #       identified. Grid points are local (north, east, altitude). (v.2)
-        random_clear = randint(0, len(grid_clear_nodes))
+#         random_clear = randint(0, len(grid_clear_nodes))
         grid_goal = (-north_offset + 30, -east_offset + 5)  # TODO (ivogeorg): Use closest_grid_node()
 #        print("Random clear index: ", random_clear)
 #        print("Node coords at index: ", grid_clear_nodes[random_clear])
