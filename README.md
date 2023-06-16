@@ -74,7 +74,7 @@ There is a simulator artifact in the form of an "elevated" section of Market Str
 
 This artifact acts like an obstacle and causes the drone centered in the middle of the colliders map data `(lon0, lat0, 0)` to overshoot at start as if passing through an obstacle (not sure how this is handled in Unity). Zero altitude is definitely "inside" the "galleria" but the drone cannot return to it. The drone, if above the "roof" of the "galleria", cannot properly land, disarm, and turn off guidance, since it cannot meet the criterion of (approximately) zero elevation. 
 
-The map data does not show any obstacle at the same location and anyway the default flight elevation of 5 meters can avoid it altogether. This only affects taking off from and landing anywhere in the footprint of the "galleria". A bird's eye inspection of the rest of the city shows no similar anomalies.
+The map data does not show any obstacle at the same location and anyway the default flight elevation of 5 meters can avoid it altogether. This only affects taking off from and landing anywhere in the footprint of the "galleria". Unfortunately, the simulator always initializes the drone at the center of the city, which is inside the galleria anomaly. So, the first flight will be affected, but as long as the drone does not try to land on the roof of the galleria, the rest will be fine. A bird's eye inspection of the rest of the city shows no similar anomalies.
 
 It's interesting to point out that since the 2D is for a certain altitude, a clear (white or magenta) region is not necessarily at zero altitude, so the drone might not be able to land there w/o modification of the [`velocity_callback`](/motion_planning.py#L61) code.
 
