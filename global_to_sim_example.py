@@ -21,7 +21,7 @@ print("Global position: ", global_position)
 global_home = (-122.397450, 37.792480, 0)
 print("Global home: ", global_home)
 
-local_position = global_to_local(global_position, self.global_home)
+local_position = global_to_local(global_position, global_home)
 print("Local position (relative to home): ", local_position)
 
 # Calculate row and column indices of grid cell
