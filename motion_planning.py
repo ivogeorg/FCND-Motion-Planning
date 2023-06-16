@@ -25,7 +25,7 @@ class States(Enum):
 
 class MotionPlanning(Drone):
 
-    def __init__(self, connection):  # TODO (ivogeorg): Global lat-lon start-target coord args!
+    def __init__(self, connection):  # TODO (ivogeorg): Global lat-lon start-target coord args! (v.2)
         super().__init__(connection)
 
         self.target_position = np.array([0.0, 0.0, 0.0])
@@ -128,25 +128,21 @@ class MotionPlanning(Drone):
 
         # DONE (ivogeorg): read lat0, lon0 from colliders into floating point values
         # NOTE (ivogeorg): 
-        # First line of colliders file is "lat0 37.792480, lon0 -122.397450".
+        # First line of colliders file is "lat0 37.792480, lon0 -122.397450", the
+        # global position of the center of the grid.
         latlon = ""
         with open("colliders.csv", "r") as f:
             latlon = f.readline()
         lat0, lon0 = latlon.split(", ")
         lat0 = float(lat0.split()[1])
         lon0 = float(lon0.split()[1])
-        # TODO (ivogeorg): What are these coordinates?
         
         # DONE: set home position to (lon0, lat0, 0)
-        # NOTE (ivogeorg): 
-        # global_home is a property of udacidrone.Drone
-        # so self.global_home = np.array([lon0, lat0, 0.0]) is invalid.
-        # TODO (ivogeorg): 
-        # Check how home is used, esp. in relation to start and target.
         # NOTE (ivogeorg):
-        # udacidrone has a method set_home_position and it is in 
-        # global coordinates.
-        self.set_home_position(lon0, lat0, 0.0)
+        # The home position is used by `udacidrone.frame_utils.global_to_local`
+        # to convert global (lon, lat, up) coordinates to local (nor, east, down)
+        # coordinates relative to the home location.
+        self.set_home_position(lon0, lat0, 3.05)
 
         # DONE: retrieve current global position
         # NOTE (ivogeorg): 
@@ -166,9 +162,6 @@ class MotionPlanning(Drone):
         
         # Define a grid for a particular altitude and safety margin around obstacles
         grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
-        print("Grid shape: ", grid.shape)
-        print("Clear node count:", len(grid_clear_nodes))
-        print("First 10: ", grid_clear_nodes[:10])
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
