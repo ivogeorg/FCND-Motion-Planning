@@ -127,9 +127,9 @@ class MotionPlanning(Drone):
         self.target_position[2] = TARGET_ALTITUDE
 
         # DONE (ivogeorg): read lat0, lon0 from colliders into floating point values
-        # NOTE (ivogeorg): 
-        # First line of colliders file is "lat0 37.792480, lon0 -122.397450", the
-        # global position of the center of the grid.
+        # NOTE 13 (ivogeorg): 
+        # First line of colliders file is "lat0 37.792480, lon0 -122.397450". This
+        # is the global position of the center of the grid.
         latlon = ""
         with open("colliders.csv", "r") as f:
             latlon = f.readline()
@@ -138,49 +138,71 @@ class MotionPlanning(Drone):
         lon0 = float(lon0.split()[1])
         
         # DONE: set home position to (lon0, lat0, 0)
-        # NOTE (ivogeorg):
+        # NOTE 14 (ivogeorg):
         # The home position is used by `udacidrone.frame_utils.global_to_local`
         # to convert global (lon, lat, up) coordinates to local (nor, east, down)
         # coordinates relative to the home location.
-        self.set_home_position(lon0, lat0, 3.2)
+        # NOTE 15 (ivogeorg):
+        # The simulator initializes the drone at this location by default, and
+        # works with meters relative to it. By the logic of `global_to_local`,
+        # this is local position zero (0., 0., 0.). The colliders data is all
+        # in meters relative to this zero location.
+        self.set_home_position(lon0, lat0, 0.0)
 
         # DONE: retrieve current global position
-        # NOTE (ivogeorg): 
+        # NOTE 16 (ivogeorg): 
         # global_position is a property of of udacidrone.Drone
         # This is in lon, lat, alt (or up).
  
         # DONE: convert to current local position using global_to_local()
-        # NOTE (ivogeorg): 
+        # NOTE 17 (ivogeorg): 
         # local_position is also a property of udacidrone.Drone, so it is
         # not settable and is maintained along with global_position.
         # This is in north, east, down.
         
-        print('Global home {0}, global position {1}, local position {2}'.format(self.global_home, self.global_position, self.local_position))
+        print('Global home {0}, global position {1}, local position {2}'.format(
+            self.global_home, self.global_position, self.local_position))
+
         # Read in obstacle map
         data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
         print("Colliders data shape: ", data.shape)
         
         # Define a grid for a particular altitude and safety margin around obstacles
-#         grid, north_offset, east_offset, grid_clear_nodes = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
-        grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        grid, north_offset, east_offset = create_grid_flipped(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        # NOTE 18 (ivogeorg):
+        # create_grid_flipped flips axis 0 of grid (or, up-down) to conform to
+        # the frame of the simulator.
+        # NOTE 19 (ivogeorg):
+        # The grid is a 971 by 971 points at a resolution of 1 meter and only
+        # whole numbers. The origin of the grid (0, 0), after flipping, is the
+        # bottom-left (SW) corner. The offsets returned by create_grid_flipped
+        # define its location (in meters) relative to local position (0., 0., 0.).
+        # NOTE 20 (ivogeorg):
+        # The simulator works with waypoints in meters relative to global home
+        # and local position (0., 0., 0.) at the center of the world (and grid).
+        # For example, a waypoint of (20, 10, 0, 0) is 20 m north and 10 m east
+        # of this position, and thus at a grid position (north_offset + 20, 
+        # east_offset + 10).
         print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
         
         # Define starting point on the grid (this is just grid center)
-        # NOTE (ivogeorg): Actually, "origin" instead of "center", since
-        # create_grid returns [grid, int(north_min), int(east_min)]
-        grid_start = (-north_offset + 20, -east_offset)
-        # NOTE (ivogeorg): Interestingly, we don't actually know the exact global or
-        # local coordinates of the grid nodes. We only have information about whether
-        # they are obstructed or not (at the prescribed altitude).
+        grid_start = (-north_offset, -east_offset)
+        # NOTE 21 (ivogeorg): 
+        # Due to the rounding to integers in create_grid_flipped, there aren't
+        # unique global or local position tuples for the nodes. Instead, there 
+        # are circles (in 2D) and spheres (in 3D) around each node the coordinates
+        # of which round to the node.
         
         # TODO: convert start position to current position rather than map center
-        # NOTE (ivogeorg): 
-        # Again, "map origin" instead of "map center". This makes sense if there are
-        # several flights one after the other. The simulator keeps the "current
-        # location" of the drone, so the drone can start where it ended the previous
-        # flight. Verified with starter code and "zig-zag" trajectory.
-#        self.set_home_as_current_position()                                 # lon, lat, alt
-#        grid_start = (self.local_position[0], self.local_position[1])   # nor, east
+        # NOTE 22 (ivogeorg): 
+        # This makes sense if there are several flights one after the other. The 
+        # simulator, if not reset, keeps the current location of the drone, so the 
+        # drone will start where it ended the previous flight. Verified with 
+        # starter code and "zig-zag" trajectory.
+        grid_start = (self.local_position[0], self.local_position[1])   # north, east
+
+
+
 
         # TODO (ivogeorg): Funciton closest_grid_node_local() in planning_utils.py to make
         # sure the drone stays within the grid. Using local coordinates (N, E), also

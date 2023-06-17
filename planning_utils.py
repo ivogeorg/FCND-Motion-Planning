@@ -42,9 +42,16 @@ def create_grid(data, drone_altitude, safety_distance):
     # TODO (ivogeorg): 
     # 1. Add obstacle for sea.
     # 2. Add obstacle for Market Street artifact.
-    # 3. Flip grid on axes 0 (up-down) before returning.
     
     return grid, int(north_min), int(east_min)
+
+
+# flip the grid to conform to the frame of the simulator
+def create_grid_flipped(data, drone_altitude, safety_distance):
+    grid, zero_local_to_grid_origin_north_offset, zero_local_to_grid_origin_east_offset = \
+        create_grid(data, drone_altitude, safety_distance)
+
+    return np.flipud(grid), zero_local_to_grid_origin_north_offset, zero_local_to_grid_origin_east_offset
 
 
 class Action(Enum):
