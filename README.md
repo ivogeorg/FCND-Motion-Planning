@@ -2,6 +2,8 @@
 
 Planning in the complex urban environment of San Francisco using the `udacidrone` API and the Unity-based Udacity simulator. A [guide](project-and-submission-guide.md) describes the project setup and the submission requirements. The code-writing **TODOs**, both required and optional, are all inlined in [motion_planning.py](motion_planning.py).
 
+<img src="/assets/FCND-Planning-Upban-World.png" width="840"/>
+
 ## Starter Code
 
 The overall architecture of this project is (i) user code contained in a sublclass of the `udacidrone.Drone` class, (ii) the `udacidrone` API serving as an interface between high-level user planning and control and the simulator, mediated via a two-way MAVLink protocol asynchronous message stream, and (iii) the Unity-based simulator that contains the urban world specification and the low-level dynamics and control model of the drone.
@@ -182,7 +184,10 @@ The drone can fly multiple missions in a row without resetting the simulator. It
    | --- | --- |
    | <img src="/assets/FCND-Planning-Wrong-Start.png" width="300"/> | <img src="/assets/FCND-Planning-Correct-Start.png" width="300"/> | 
 3. Arm the drone and fly up (SPACE). Because of the Market St. obstacle described [above](#44-the-elevated-market-street-artifact), the drone will overshoot, but eventually will settle at some altitude corresponding to how much SPACE was pressed.
-4. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle.
+4. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle. For example, fly forward with W (see below).
+   | Near | Far |
+   | --- | --- |
+   | <img src="/assets/FCND-Planning-Start-Near.png" width="300"/> | <img src="/assets/FCND-Planning-Start-Far.png" width="300"/> | 
 5. Land the drone (C).
 6. Run the code (`python motion_planning.py`). The drone will set its current position as `grid_start`, find a random goal, set the closest unobstructed grid node to `grid_goal`, and attempt to find a path. If it finds a path, it will fly the trajectory and land. If it doesn't it will disarm and switch to manual. In either case, repeat this step to see several flights in a row, flying around the city.
 7. *Note that we don't randomize `grid_start` because the drone will attempt to fly to it regardless of obstacles in between its current position and `grid_start`.*
