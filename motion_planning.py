@@ -206,7 +206,7 @@ class MotionPlanning(Drone):
         #       to local and the nearest unobstructed grid points should be
         #       identified. Grid points are local (north, east, altitude). (v.2)
 #         random_clear = randint(0, len(grid_clear_nodes))
-        grid_goal = (-north_offset + 30, -east_offset + 5)  # TODO (ivogeorg): Use closest_grid_node()
+        grid_goal = (-north_offset + 30.5, -east_offset + 5.7)  # TODO (ivogeorg): Use closest_grid_node()
 #        print("Random clear index: ", random_clear)
 #        print("Node coords at index: ", grid_clear_nodes[random_clear])
 #        print("N coord at index: ", grid_clear_nodes[random_clear][0])
@@ -247,6 +247,9 @@ class MotionPlanning(Drone):
 
         # Convert path to waypoints
         waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
+        # NOTE (ivogeorg): For this to make sense it means that the simulator works in
+        # meters relative to global home and local position zero (0, 0, 0)!
+
         # Set self.waypoints
         self.waypoints = waypoints
         # Send waypoints to sim (this is just for visualization of waypoints)
