@@ -140,7 +140,7 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 
 #### 2.1. *Questions on the grid*
 
-1. What are the coordinate numbers in the [colliders file](no-latlon-colliders.csv)? Since there are both negative and positive float values for the first two columns, these are neither global (which should be a positive latitude and a negative longitude) nor local coordinates (which should have north and east both positive).
+1. ~What are the coordinate numbers in the [colliders file](no-latlon-colliders.csv)? Since there are both negative and positive float values for the first two columns, these are neither global (which should be a positive latitude and a negative longitude) nor local coordinates (which should have north and east both positive).~ The coordinate numbers are Cartesian distances in meters relative to the center of the grid given by the global position on the first line.
    1. Note that `global_to_local` takes two arguments, `global_position` and `global_home` so essentially the local coordinates are returned relative to the **home position**, which is what the significance of `global_home` and `set_home_position` is. This might provide a clue to the mapping of local positions to grid and to the role of the offsets (see below).
    2. Global coordinates of the 4 corners (approximate (lon, lat)): SW (-122.4024, 37.7897), NW (-122.4024, 37.7979), NE (-122.3921, 37.7979), SE (-122.3921, 37.7897).
    3. The center of the grid is: C (-122.3975, 37.7925).
@@ -149,17 +149,17 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
       2. NW [ 596.35963319, -435.25197039,   -0.0]
       3. NE [ 602.20641541,  471.54922346,   -0.0]
       4. SE [-307.58154996,  477.46484185,   -0.0]
-3. Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`? 
-4. Why are the offsets integers?
-5. Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?
-6. Why does the grid have to be flipped? 
+3. ~Where exactly is the start position, relative to the grid, when set as follows `grid_start = (-north_offset, -east_offset)`?~ Global home, if lon0 and lat0 from the first line of the colliders data are used to set it, by the logic of `global_to_local`, local position (0, 0, 0). 
+4. ~Why are the offsets integers?~ All the node positions are tuples of integer distances in meters. The grid has a resolution of 1 meter in each axis (north, east, alt/up). This is achieved by rounding, and this certainly introduces error. The safe distance of 3 meters takes care of that.
+5. ~Why are they negated? Does this have to do with flipping the grid so that North is positive up and East is positive to the right, so that the origin of the grid is bottom left?~ They are negated to change the perspective from the grid origin to local position (0, 0, 0), because are returned by `create_grid` as calculated from the opposite perspective. The grid has to be flipped by `np.flipud()` to (i) visualize correctly (as a normal map of San Francisco) and (ii) correspond to the simulator frame. 
+6. ~Why does the grid have to be flipped?~ To correspond to the simulator frame. 
 7. ~Any way to display all the clear nodes on the grid?~ Yes, though there will be many and very dense. See this [notebook](/notebooks/A-Star-City.ipynb).
-8. What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?
+8. ~What exactly, relative to the grid, is the goal in `grid_goal = (-north_offset + 10, -east_offset + 10)`?~ 10 meters from grid origin in each axis direction (north, east).
 9. How should the tuple indices of `grid_clear_nodes` be used to conform to this goal formation?
-10. Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?
+10. ~Is there a correspondence between the indices of the grid nodes and their local positions? For example, are they evenly spaced?~ A corresponding grid node can be found from a local position by using `ceil` and casting to `int` to get the grid node indices. Nodes are one meter apart in each axis direction. Because of this rounding, one cannot recover a single local position tuple from a node index tuple. At best, it will be a circle (or sphere) around the node, showing the local positions that round to this node.
 11. What is the relationship between the path grid nodes and the waypoints? It looks like there is a 1-to-1 correspondence with a constant N-E offset for the grid nodes.
 12. What is the proper way to randomize the goals for the goal expression?
-13. How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.) 
+13. ~How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.)~ This [notebook](/notebooks/A-Star-City.ipynb) has code for that. 
 
 
 #### 2.2. *Questions on the simulator*
