@@ -125,12 +125,18 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
    
    <img src="/assets/Project2-diagonal-motion.png" width="450"/>  
 
-### 2. *Notes on goal given in [lat, lon]*
+### 2. *Notes on goal given in [lon, lat]*
 
-1. If a node is not given explicitly, then the closest node has to be found. This is `target_ini`.
-2. If `target_ini` has an obstacle, the closest non-obstructed node has to be found. This is `target_clear`. A modified `a_star_clear` can be used to find it.
-3. If `target_ini` is clear, it is set as `goal`, otherwise `target_clear` is.
-4. `a_star` can be used as usual with `start` and `goal`.
+1. If a node is not given explicitly, and this is the case for a global (lon, lat) position, then the closest node has to be found. This is `target_node_ini`.
+2. [global_to_sim_example.py](global_to_sim_example.py) contains the code to convert from global (lon, lat) to a grid node which is in conformance with the simulator frame. Consider encapsulating in a function `global_to_grid_node()` in [planning_utils.py](planning_utils.py). It can handle:
+   1. Out-of-bound input global coordinates, clipping at the edges of the world.
+   2. The Market Street anomaly.
+   3. The water of the bay in the top-right (NE) corner of the simulator world. 
+4. The grid coming from `create_grid` has to be inverted with `np.flipud()` (flip/reverse axis 0) to get in conformance with the simulator frame. Consider retruning an already flipped grid from `create_grid` so `global_to_grid_node()` assumes a flipped grid.
+5. Consider renaming the offsets to more descriptive names. They are negative, so they point to the grid origin (which is top-left or, after `np.flipud()`, bottom_left) from the perspective of global home and zero local position (which is the center of both the simulation world and the colliders data). When they are flipped in [motion_planning.py](motion_planning.py#L171), they point to global home and zero local position from the perspective of the grid origin. So, consider names `zero_local_to_grid_origin_north_offset` and `zero_local_to_grid_origin_east_offset`. These are verbose but will be encapsulated in `global_to_grid_node()`.
+6. If `target_node_ini` has an obstacle, the closest unobstructed node has to be found. This is `target_node_clear`. A modified `a_star_clear` can be used to find it, starting from `target_node_ini` and stopping when the closest unobstructed node is found. 
+7. If `target_node_ini` is clear, it is returned, otherwise `target_node_clear` is.
+8. `a_star` can be used normally with `grid_start` and `grid_goal` for each flight.
 
 #### 2.1. *Questions on the grid*
 
