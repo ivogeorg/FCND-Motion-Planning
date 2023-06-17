@@ -168,3 +168,18 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 2. ~Can the simulator view perspective relative to the drone be changed? Does it have to be relative to the drone?~ The controls work fine and the whole world can be viewed from above. The perspective can be changed with **Pan Camera** and can be zoomed. The camera can also be tilted, yawed, and zoomed. See next question.
 3. Is there a drone camera view separate from the simulator observer view?
 4. ~What does the simulator show? How does that correspond to the grid?~ The simulator has two reset states which alternate on pressing Shift-R. One shows the city, the other note. The portion of the city almost exactly corresponds to the colliders. There might be some discrepancy, which is usually handled by a 3-meter safety distance.
+
+## Flying the Drone
+
+### 1. Overview of Setup
+
+The drone can fly multiple missions in a row without resetting the simulator. It randomizes its next goal, finds a path to it, and follows the waypoints to reach it. That goal becomes the new start position. The goal is generated in global coorindates and is converted first to local coordinates and then to a grid node. If the grid node has an obstacle at the target altitude, the closest unobstructed node is found.
+
+### 2. Instructions
+
+1. Open the simulator on the correct reset state (see below). If it opens in the wrong one, hit Shift-r.
+2. Arm the drone and fly up (SPACE). Because of the Market St. obstacle described [above](#44-the-elevated-market-street-artifact), the drone will overshoot, but eventually will settle at some altitude corresponding to how much SPACE was pressed.
+3. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle.
+4. Land the drone (C).
+5. Run the code (`python motion_planning.py`). The drone will set its current position as `grid_start`, find a random goal, set the closest unobstructed grid node to `grid_goal`, and attempt to find a path. If it finds a path, it will fly the trajectory and land. If it doesn't it will disarm and switch to manual. In either case, repeat this step to see several flights in a row, flying around the city.
+6. *Note that we don't randomize `grid_start` because the drone will attempt to fly to it regardless of obstacles in between its current position and `grid_start`.*
