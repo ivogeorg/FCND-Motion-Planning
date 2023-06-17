@@ -177,9 +177,12 @@ The drone can fly multiple missions in a row without resetting the simulator. It
 
 ### 2. Instructions
 
-1. Open the simulator on the correct reset state (see below). If it opens in the wrong one, hit Shift-r.
-2. Arm the drone and fly up (SPACE). Because of the Market St. obstacle described [above](#44-the-elevated-market-street-artifact), the drone will overshoot, but eventually will settle at some altitude corresponding to how much SPACE was pressed.
-3. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle.
-4. Land the drone (C).
-5. Run the code (`python motion_planning.py`). The drone will set its current position as `grid_start`, find a random goal, set the closest unobstructed grid node to `grid_goal`, and attempt to find a path. If it finds a path, it will fly the trajectory and land. If it doesn't it will disarm and switch to manual. In either case, repeat this step to see several flights in a row, flying around the city.
-6. *Note that we don't randomize `grid_start` because the drone will attempt to fly to it regardless of obstacles in between its current position and `grid_start`.*
+1. Open the simulator on the correct reset state (see below). If it opens in the wrong one (in which there is no city), hit Shift-r. Pressing Shift-r multiple times just alternates the two reset states.
+   | Wrong | Correct |
+   | --- | --- |
+   | <img src="/assets/FCND-Planning-Wrong-Start.png" width="300"/> | <img src="/assets/FCND-Planning-Correct-Start.png" width="300"/> | 
+3. Arm the drone and fly up (SPACE). Because of the Market St. obstacle described [above](#44-the-elevated-market-street-artifact), the drone will overshoot, but eventually will settle at some altitude corresponding to how much SPACE was pressed.
+4. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle.
+5. Land the drone (C).
+6. Run the code (`python motion_planning.py`). The drone will set its current position as `grid_start`, find a random goal, set the closest unobstructed grid node to `grid_goal`, and attempt to find a path. If it finds a path, it will fly the trajectory and land. If it doesn't it will disarm and switch to manual. In either case, repeat this step to see several flights in a row, flying around the city.
+7. *Note that we don't randomize `grid_start` because the drone will attempt to fly to it regardless of obstacles in between its current position and `grid_start`.*
