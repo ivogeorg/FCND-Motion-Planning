@@ -230,6 +230,11 @@ class MotionPlanning(Drone):
         # or move to a different search space such as a graph (not done here)
         print('Local Start and Goal: ', grid_start, grid_goal)
         path, _ = a_star(grid, heuristic, grid_start, grid_goal)
+        print("Path: ", path)
+        # TODO (ivogeorg): If path is None, should gracefully shut down.
+        # `plan_path` should therefore return a boolean to indicate 
+        # success of failure. This should be treated accordingly in the
+        # transitions code.
         
         # TODO: prune path to minimize number of waypoints
         # TODO (ivogeorg): Function prune_path() in planning_utils.py.
