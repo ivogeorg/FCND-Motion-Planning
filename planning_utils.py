@@ -3,6 +3,7 @@ from queue import PriorityQueue
 import numpy as np
 from math import sqrt
 
+
 def create_grid(data, drone_altitude, safety_distance):
     """
     Returns a grid representation of a 2D configuration space
@@ -37,17 +38,15 @@ def create_grid(data, drone_altitude, safety_distance):
                 int(np.clip(east + d_east + safety_distance - east_min, 0, east_size-1)),
             ]
             grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
+
+    # TODO (ivogeorg): 
+    # 1. Add obstacle for sea.
+    # 2. Add obstacle for Market Street artifact.
+    # 3. Flip grid on axes 0 (up-down) before returning.
     
-    # List of clear grid coordinates (to use for randomizing goal nodes)
-#     grid_clear_nodes = []
-#     for index, ob in np.ndenumerate(grid):
-#         if ob == 0:
-#             grid_clear_nodes.append(index)  # (n, e)
-
-    return grid, int(north_min), int(east_min) #, grid_clear_nodes
+    return grid, int(north_min), int(east_min)
 
 
-# Assume all actions cost the same.
 class Action(Enum):
     """
     An action is represented by a 3 element tuple.
@@ -126,7 +125,7 @@ def a_star(grid, h, start, goal):
             current_cost = branch[current_node][0]
             
         if current_node == goal:        
-            print('Found a path.')
+            # print('Found a path.')
             found = True
             break
         else:
