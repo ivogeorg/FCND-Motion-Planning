@@ -2,6 +2,7 @@ from enum import Enum
 from queue import PriorityQueue
 import numpy as np
 from math import sqrt
+from udacidrone.frame_utils import global_to_local
 
 
 def create_grid(data, drone_altitude, safety_distance):
@@ -32,10 +33,18 @@ def create_grid(data, drone_altitude, safety_distance):
         north, east, alt, d_north, d_east, d_alt = data[i, :]
         if alt + d_alt + safety_distance > drone_altitude:
             obstacle = [
-                int(np.clip(north - d_north - safety_distance - north_min, 0, north_size-1)),
-                int(np.clip(north + d_north + safety_distance - north_min, 0, north_size-1)),
-                int(np.clip(east - d_east - safety_distance - east_min, 0, east_size-1)),
-                int(np.clip(east + d_east + safety_distance - east_min, 0, east_size-1)),
+                int(np.clip(north - d_north - safety_distance - north_min, 
+                            0, 
+                            north_size-1)),
+                int(np.clip(north + d_north + safety_distance - north_min, 
+                            0, 
+                            north_size-1)),
+                int(np.clip(east - d_east - safety_distance - east_min, 
+                            0, 
+                            east_size-1)),
+                int(np.clip(east + d_east + safety_distance - east_min, 
+                            0, 
+                            east_size-1)),
             ]
             grid[obstacle[0]:obstacle[1]+1, obstacle[2]:obstacle[3]+1] = 1
 
@@ -48,10 +57,48 @@ def create_grid(data, drone_altitude, safety_distance):
 
 # flip the grid to conform to the frame of the simulator
 def create_grid_flipped(data, drone_altitude, safety_distance):
-    grid, zero_local_to_grid_origin_north_offset, zero_local_to_grid_origin_east_offset = \
+    grid, \
+    zero_local_to_grid_origin_north_offset, \
+    zero_local_to_grid_origin_east_offset = \
         create_grid(data, drone_altitude, safety_distance)
 
-    return np.flipud(grid), zero_local_to_grid_origin_north_offset, zero_local_to_grid_origin_east_offset
+    return np.flipud(grid), \
+        zero_local_to_grid_origin_north_offset, \
+        zero_local_to_grid_origin_east_offset
+
+
+def global_position_to_grid_node(global_position, global_home,
+                                grid, elevation,
+                                north_offset, east_offset):
+    """
+    Convert global position to grid node tuple (n, e).
+
+    Independent of grid axis 0 orientation. That is, it assumes
+    grid is flipped outside of this function. Clips global
+    coordinates to edges of world, so arbitrary positions can be
+    given.
+    """
+
+    # TODO (ivogeorg):
+    # Clip global to world edges if outside with A* search
+
+    # Calculate relative local position
+    local_position = global_to_local(global_position, global_home)
+
+    # Calculate row and column indices of grid cell
+    grid_position = (int(np.ceil(local_position[0] - north_offset)), 
+                    int(np.ceil(local_position[1] - east_offset)))
+
+    # TODO (ivogeorg):
+    # If node is obstructed at elevation, find the closest
+    # unobstructed. This doesn't guarantee that it can be reached,
+    # until 3D grid (e.g. courtyard of hotel).
+    # 4 corners (approximate (lon, lat)): 
+    # SW (-122.4024, 37.7897), NW (-122.4024, 37.7979), 
+    # NE (-122.3921, 37.7979), SE (-122.3921, 37.7897)
+    # Use some reasonable rounding for separation --->|->
+
+    return grid_position
 
 
 class Action(Enum):
