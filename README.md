@@ -127,7 +127,32 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
    
    <img src="/assets/Project2-diagonal-motion.png" width="450"/>  
 
-### 2. *Notes on goal given in [lon, lat]*
+
+## Flying the Drone
+
+### 1. Overview of Setup
+
+The drone can fly multiple missions in a row without resetting the simulator. It randomizes its next goal, finds a path to it, and follows the waypoints to reach it. That goal becomes the new start position. The goal is generated in global coorindates and is converted first to local coordinates and then to a grid node. If the grid node has an obstacle at the target altitude, the closest unobstructed node is found.
+
+### 2. Instructions
+
+1. Open the simulator on the correct reset state (see below). If it opens in the wrong one (in which there is no city), hit Shift-r. Pressing Shift-r multiple times just alternates the two reset states.
+   | Wrong | Correct |
+   | --- | --- |
+   | <img src="/assets/FCND-Planning-Wrong-Start.png" width="300"/> | <img src="/assets/FCND-Planning-Correct-Start.png" width="300"/> | 
+3. Arm the drone and fly up (SPACE). Because of the Market St. obstacle described [above](#44-the-elevated-market-street-artifact), the drone will overshoot, but eventually will settle at some altitude corresponding to how much SPACE was pressed.
+4. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle. For example, fly forward with W (see below).
+   | Near | Far |
+   | --- | --- |
+   | <img src="/assets/FCND-Planning-Start-Near.png" width="300"/> | <img src="/assets/FCND-Planning-Start-Far.png" width="300"/> | 
+5. Land the drone (C).
+6. Run the code (`python motion_planning.py`). The drone will set its current position as `grid_start`, find a random goal, set the closest unobstructed grid node to `grid_goal`, and attempt to find a path. If it finds a path, it will fly the trajectory and land. If it doesn't it will disarm and switch to manual. In either case, repeat this step to see several flights in a row, flying around the city.
+7. *Note that we don't randomize `grid_start` because the drone will attempt to fly to it regardless of obstacles in between its current position and `grid_start`.*
+
+
+## *Private Notes*
+
+### *1. Notes on goal given in [lon, lat]*
 
 1. If a node is not given explicitly, and this is the case for a global (lon, lat) position, then the closest node has to be found. This is `target_node_ini`.
 2. [global_to_sim_example.py](global_to_sim_example.py) contains the code to convert from global (lon, lat) to a grid node which is in conformance with the simulator frame. Consider encapsulating in a function `global_to_grid_node()` in [planning_utils.py](planning_utils.py). It can handle:
@@ -140,7 +165,7 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 7. If `target_node_ini` is clear, it is returned, otherwise `target_node_clear` is.
 8. `a_star` can be used normally with `grid_start` and `grid_goal` for each flight.
 
-#### 2.1. *Questions on the grid*
+#### *1.1. Questions on the grid*
 
 1. ~What are the coordinate numbers in the [colliders file](no-latlon-colliders.csv)? Since there are both negative and positive float values for the first two columns, these are neither global (which should be a positive latitude and a negative longitude) nor local coordinates (which should have north and east both positive).~ The coordinate numbers are Cartesian distances in meters relative to the center of the grid given by the global position on the first line.
    1. Note that `global_to_local` takes two arguments, `global_position` and `global_home` so essentially the local coordinates are returned relative to the **home position**, which is what the significance of `global_home` and `set_home_position` is. This might provide a clue to the mapping of local positions to grid and to the role of the offsets (see below).
@@ -164,30 +189,11 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 13. ~How to visualize the start, goal, and path on the grid? (See section on graph. Should be similar.)~ This [notebook](/notebooks/A-Star-City.ipynb) has code for that. 
 
 
-#### 2.2. *Questions on the simulator*
+#### *1.2. Questions on the simulator*
 
 1. ~What are the parameters in the simulator? Are they settable?~ PID coefficients, max values, etcetera drone dynamics. Nothing about the view.
 2. ~Can the simulator view perspective relative to the drone be changed? Does it have to be relative to the drone?~ The controls work fine and the whole world can be viewed from above. The perspective can be changed with **Pan Camera** and can be zoomed. The camera can also be tilted, yawed, and zoomed. See next question.
 3. Is there a drone camera view separate from the simulator observer view?
 4. ~What does the simulator show? How does that correspond to the grid?~ The simulator has two reset states which alternate on pressing Shift-R. One shows the city, the other note. The portion of the city almost exactly corresponds to the colliders. There might be some discrepancy, which is usually handled by a 3-meter safety distance.
 
-## Flying the Drone
 
-### 1. Overview of Setup
-
-The drone can fly multiple missions in a row without resetting the simulator. It randomizes its next goal, finds a path to it, and follows the waypoints to reach it. That goal becomes the new start position. The goal is generated in global coorindates and is converted first to local coordinates and then to a grid node. If the grid node has an obstacle at the target altitude, the closest unobstructed node is found.
-
-### 2. Instructions
-
-1. Open the simulator on the correct reset state (see below). If it opens in the wrong one (in which there is no city), hit Shift-r. Pressing Shift-r multiple times just alternates the two reset states.
-   | Wrong | Correct |
-   | --- | --- |
-   | <img src="/assets/FCND-Planning-Wrong-Start.png" width="300"/> | <img src="/assets/FCND-Planning-Correct-Start.png" width="300"/> | 
-3. Arm the drone and fly up (SPACE). Because of the Market St. obstacle described [above](#44-the-elevated-market-street-artifact), the drone will overshoot, but eventually will settle at some altitude corresponding to how much SPACE was pressed.
-4. Fly a small distance along Davis St. to make sure that the drone is not on top of the Market St. obstacle. For example, fly forward with W (see below).
-   | Near | Far |
-   | --- | --- |
-   | <img src="/assets/FCND-Planning-Start-Near.png" width="300"/> | <img src="/assets/FCND-Planning-Start-Far.png" width="300"/> | 
-5. Land the drone (C).
-6. Run the code (`python motion_planning.py`). The drone will set its current position as `grid_start`, find a random goal, set the closest unobstructed grid node to `grid_goal`, and attempt to find a path. If it finds a path, it will fly the trajectory and land. If it doesn't it will disarm and switch to manual. In either case, repeat this step to see several flights in a row, flying around the city.
-7. *Note that we don't randomize `grid_start` because the drone will attempt to fly to it regardless of obstacles in between its current position and `grid_start`.*
