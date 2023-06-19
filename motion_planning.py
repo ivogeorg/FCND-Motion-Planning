@@ -6,7 +6,7 @@ from enum import Enum, auto
 import numpy as np
 from numpy.random import randint
 
-from planning_utils import a_star, heuristic, create_grid_flipped
+from planning_utils import a_star, heuristic, create_grid_flipped, global_position_to_grid_node
 from udacidrone import Drone
 from udacidrone.connection import MavlinkConnection
 from udacidrone.messaging import MsgID
