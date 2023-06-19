@@ -76,7 +76,8 @@ def closest_clear_node(grid, node_position):
     If given node is obstructed, return the closest clear position.
     """
     if not grid[node_position[0], node_position[1]]:
-        print("Grid position {} is clear".format(node_position))   
+        print("Grid position {} is clear".format(node_position))
+        return node_position   
     else:
         print("Grid position {} is obstructed".format(node_position))
         print("Looking for an adjacent clear position...")   
