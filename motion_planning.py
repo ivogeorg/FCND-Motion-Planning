@@ -204,7 +204,7 @@ class MotionPlanning(Drone):
         # are circles (in 2D) and spheres (in 3D) around each node the 
         # coordinates of which round to the node.
         
-        # TODO: convert start position to current position rather than map 
+        # DONE: convert start position to current position rather than map 
         # center
         # NOTE 22 (ivogeorg): 
         # This makes sense if there are several flights one after the other. 
@@ -222,48 +222,36 @@ class MotionPlanning(Drone):
                         grid, TARGET_ALTITUDE, 
                         north_offset, east_offset)
 
-
-
-
-
-        # TODO: Set goal as some arbitrary position on the grid
-        # NOTE (ivogeorg): Position in the GRID! So, pick a node by an index tuple.
-        # NOTE (ivogeorg): When a_star as originally written in mapping_utils is
+        # DONE: Set goal as some arbitrary position on the grid
+        # NOTE 24 (ivogeorg): 
+        # When a_star as originally written in mapping_utils is
         # given a grid, it can only find paths between two grid nodes. Start and
         # goal positions off the grid cannot be on the path, unless a_star is
         # modified. a_star can also work with a graph, as long as start and goal
         # are graph nodes. Of course, the drone can freely fly off the grid!
-        # TODO (ivogeorg): 
-        #       Randomize but position away from obstacles at any altitude.
-        #       This may be done in a random sampling loop. Note that this may
-        #       include courtyards which may require climbing to the top of
-        #       the surrounding building and then descending into the courtyard.
-        #       Have to experiment with such goal positions. Also experiement
-        #       with spiral descent into courtyards.
+        # NOTE 25 (ivogeorg):
+        # The goal position is randomized within the following
+        # 4 corners (approximate (lon, lat)): 
+        # SW (-122.402424, 37.789649), NW (-122.402424, 37.797903), 
+        # NE (-122.392115, 37.797903), SE (-122.392115, 37.789649)
+        goal_global_lat = np.random.uniform(37.789649, 37.797903)
+        goal_global_lon = np.random.uniform(-122.392115, -122.402424)
+        grid_goal = global_position_to_grid_node(
+                        (goal_global_lon, goal_global_lat, 0.0), 
+                        self.global_home, 
+                        grid, TARGET_ALTITUDE, 
+                        north_offset, east_offset)
+
         # TODO (ivogeorg):
-        #       Global (lat, lon) start and target should be read in from cmd line 
+        #       Global (lon, lat) start and target should be read in from cmd line 
         #       arguments or defaulted, in the constructor. They should be converted
         #       to local and the nearest unobstructed grid points should be
         #       identified. Grid points are local (north, east, altitude). (v.2)
-#         random_clear = randint(0, len(grid_clear_nodes))
-        grid_goal = (-north_offset + 20, -east_offset - 11)  # TODO (ivogeorg): Use closest_grid_node()
-#        print("Random clear index: ", random_clear)
-#        print("Node coords at index: ", grid_clear_nodes[random_clear])
-#        print("N coord at index: ", grid_clear_nodes[random_clear][0])
-#        print("E coord at index: ", grid_clear_nodes[random_clear][1])
 
-#        grid_goal = (-north_offset + grid_clear_nodes[random_clear][0], -east_offset + grid_clear_nodes[random_clear][1])  # TODO (ivogeorg): Use closest_grid_node()
-#        grid_goal = (-north_offset + 0, -east_offset + 56)  # TODO (ivogeorg): Use closest_grid_node()
+        # grid_goal = (-north_offset + 20, -east_offset - 11)
         
-        # TODO: adapt to set goal as latitude / longitude position and convert
-        # NOTE (ivogeorg): This is a more advanced version, since it is not necessarily a node!
-        # TODO (ivogeorg): 
-        #       There should probably be a check that lat/lon are within the
-        #       map. These may be added as command-line arguments.
-        #       Again, this makes no sense.
-        # TODO (ivogeorg): Define function closest_grid_node_global() taking lat, lon
-        # and reuse closest_grid_node_local()
-
+        # DONE: adapt to set goal as latitude / longitude position and convert
+ 
         # Run A* to find a path from start to goal
         # DONE (ivogeorg): 
         # Add diagonal motions with a cost of sqrt(2) to your A* implementation
@@ -278,7 +266,8 @@ class MotionPlanning(Drone):
         
         # TODO: prune path to minimize number of waypoints
         # TODO (ivogeorg): Function prune_path() in planning_utils.py.
-        # Collinearity worked well. How does Brezenham prone?
+        # Collinearity worked well. How does Brezenham prune?
+        # With diagonal actions Brezenham's utility diminishes.
 
         # TODO: (if you're feeling ambitious): Try a different approach altogether!
         # TODO (ivogeorg): 

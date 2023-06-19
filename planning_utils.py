@@ -55,8 +55,12 @@ def create_grid(data, drone_altitude, safety_distance):
     return grid, int(north_min), int(east_min)
 
 
-# flip the grid to conform to the frame of the simulator
 def create_grid_flipped(data, drone_altitude, safety_distance):
+    """
+    Returns a flipped grid. Origin (0, 0) is bottom left.
+
+    The verbose offset names are meant as a knowledge point.
+    """
     grid, \
     zero_local_to_grid_origin_north_offset, \
     zero_local_to_grid_origin_east_offset = \
@@ -65,6 +69,38 @@ def create_grid_flipped(data, drone_altitude, safety_distance):
     return np.flipud(grid), \
         zero_local_to_grid_origin_north_offset, \
         zero_local_to_grid_origin_east_offset
+
+
+def closest_clear_node(grid, node_position):
+    """
+    If given node is obstructed, return the closest clear position.
+    """
+    if not grid[node_position[0], node_position[1]]:
+        print("Grid position {} is clear".format(node_position))   
+    else:
+        print("Grid position {} is obstructed".format(node_position))
+        print("Looking for an adjacent clear position...")   
+        found = False
+        # Iterative deepening in a square of side equal to the smaller grid 
+        # dimension
+        for r in range(1, min(grid.shape[0], grid.shape[1])):
+            # Generate the list of node offsets
+            offsets = [(n, e) for e in range(-r, r + 1) 
+                                for n in range(-r, r + 1)]
+            # Try all adjacent nodes at "radius" r
+            for m in offsets:
+                # Adjacent position
+                new_pos = (node_position[0] + m[0], node_position[1] + m[1])
+                # Check if within the grid
+                if new_pos[0] >= 0 and new_pos[0] < grid.shape[0] and \
+                    new_pos[1] >= 0 and new_pos[1] < grid.shape[1]:
+                    # Check if clear
+                    if not grid[new_pos[0], new_pos[1]]:
+                        print("Found clear grid position ({0}, {1})".format( \
+                            new_pos[0], new_pos[1]))
+                        return (new_pos)
+
+    return None 
 
 
 def global_position_to_grid_node(global_position, global_home,
@@ -76,13 +112,8 @@ def global_position_to_grid_node(global_position, global_home,
     Independent of grid axis 0 orientation. That is, it assumes
     grid is flipped outside of this function. Clips global
     coordinates to edges of world, so arbitrary positions can be
-    given. Uses IDS to find the (approximately) closest unobstructed
-    node.
+    given. Uses IDS to find a close adjacent unobstructed node.
     """
-
-    # TODO (ivogeorg):
-    # Clip global to world edges if outside with iterative deapening 
-    # search (IDS) to find the (approximately) closest unobstructed node
 
     # Calculate relative local position
     local_position = global_to_local(global_position, global_home)
@@ -91,18 +122,27 @@ def global_position_to_grid_node(global_position, global_home,
     grid_position = (int(np.ceil(local_position[0] - north_offset)), 
                     int(np.ceil(local_position[1] - east_offset)))
 
+    # Clip to grid edges
+    if grid_position[0] < 0:
+        grid_position[0] = 0
+    if grid_position[0] >= grid.shape[0]:
+        grid_position[0] = grid.shape[0] - 1
+    if grid_position[1] < 0:
+        grid_position[1] = 0
+    if grid_position[1] >= grid.shape[1]:
+        grid_position[1] = grid.shape[1] - 1
+
     # TODO (ivogeorg):
     # If node is obstructed at elevation, find the closest
     # unobstructed with IDS. This doesn't guarantee that it can be 
     # reached, until 3D grid (e.g. courtyard of hotel).
-    # 4 corners (approximate (lon, lat)): 
-    # SW (-122.4024, 37.7897), NW (-122.4024, 37.7979), 
-    # NE (-122.3921, 37.7979), SE (-122.3921, 37.7897)
-    # Use some reasonable rounding for separation --->|->
+    grid_position = closest_clear_node(grid, grid_position)
 
     # TODO (ivogeorg):
     # Need to avoid trying to land on the Market St anomaly. In general,
     # should be able to land on buildings and not only at zero elevation.
+    # 3D grid is needed for the general case and either a distance
+    # sensor or access to the grid's 3-rd dimension during flight.
 
     return grid_position
 
