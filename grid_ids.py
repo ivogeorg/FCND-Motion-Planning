@@ -35,9 +35,13 @@ else:
     found = False
     # Iterative deepening in a square of side equal to the smaller grid 
     # dimension
-    for i in range(min(grid.shape[0], grid.shape[1])): # TODO: Start at 1
-        # Circle around
-        # TODO: This doesn't circle around at all (diag and i > 1)
+    for r in range(1, min(grid.shape[0], grid.shape[1])):
+        # Generate the list of node offsets
+        multipliers = []
+        for n in range(-r, r + 1):
+            for e in range(-r, r + 1):
+                multipliers.append((n, e))
+        # Try all adjacent nodes at "radius" r
         for m in multipliers:
             # Check out of bounds
             new_pos = (rand_pos[0] + i * m[0], rand_pos[1] + i * m[1])
