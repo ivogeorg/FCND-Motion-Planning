@@ -100,6 +100,10 @@ def global_position_to_grid_node(global_position, global_home,
     # NE (-122.3921, 37.7979), SE (-122.3921, 37.7897)
     # Use some reasonable rounding for separation --->|->
 
+    # TODO (ivogeorg):
+    # Need to avoid trying to land on the Market St anomaly. In general,
+    # should be able to land on buildings and not only at zero elevation.
+
     return grid_position
 
 

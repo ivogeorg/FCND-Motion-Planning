@@ -51,11 +51,15 @@ class MotionPlanning(Drone):
             if -1.0 * self.local_position[2] > 0.95 * self.target_position[2]:
                 self.waypoint_transition()
         elif self.flight_state == States.WAYPOINT:
-            if np.linalg.norm(self.target_position[0:2] - self.local_position[0:2]) < 1.0: # TODO (ivogeorg): Deadband radius
+            if np.linalg.norm(
+                    self.target_position[0:2] - 
+                    self.local_position[0:2]) < 1.0: 
+                    # TODO (ivogeorg): Deadband radius
                 if len(self.waypoints) > 0:
                     self.waypoint_transition()
                 else:
-                    if np.linalg.norm(self.local_velocity[0:2]) < 1.0:
+                    if np.linalg.norm(self.local_velocity[0:2]) < 1.0: 
+                        # TODO (ig): Why?
                         self.landing_transition()
 
     def velocity_callback(self):
@@ -292,7 +296,13 @@ class MotionPlanning(Drone):
         self.send_waypoints()
 
     def start(self):
-        self.start_log("Logs", "NavLog.txt")
+        self.start_log("Logs", "NavLog.txt")  
+        
+        # TODO (ivogeorg):
+        # Examine the logs:
+        # 1. What messages are sent, when, and how frequently?
+        # 2. Study which callbacks are called when.
+        # 3. What is the best place for each state transition?
 
         print("starting connection")
         self.connection.start()
