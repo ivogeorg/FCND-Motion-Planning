@@ -80,7 +80,8 @@ def global_position_to_grid_node(global_position, global_home,
     """
 
     # TODO (ivogeorg):
-    # Clip global to world edges if outside with A* search
+    # Clip global to world edges if outside with iterative deapening 
+    # search to find the (approximately) closest unobstructed node
 
     # Calculate relative local position
     local_position = global_to_local(global_position, global_home)
@@ -211,6 +212,9 @@ def a_star(grid, h, start, goal):
         print('**********************')
         print('Failed to find a path!')
         print('**********************') 
+
+    # TODO (ivogeorg):
+    # Return found (bool), path (None if not found), path_cost (-1 if no path)
     return path[::-1], path_cost
 
 
