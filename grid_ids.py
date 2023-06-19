@@ -44,7 +44,7 @@ else:
         # Try all adjacent nodes at "radius" r
         for m in multipliers:
             # Check out of bounds
-            new_pos = (rand_pos[0] + i * m[0], rand_pos[1] + i * m[1])
+            new_pos = (rand_pos[0] + r * m[0], rand_pos[1] + r * m[1])
             if new_pos[0] >= 0 and new_pos[0] < grid.shape[0] and \
                 new_pos[1] >= 0 and new_pos[1] < grid.shape[1]:
                 if not grid[new_pos[0], new_pos[1]]:
