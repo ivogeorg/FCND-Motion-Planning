@@ -76,12 +76,13 @@ def global_position_to_grid_node(global_position, global_home,
     Independent of grid axis 0 orientation. That is, it assumes
     grid is flipped outside of this function. Clips global
     coordinates to edges of world, so arbitrary positions can be
-    given.
+    given. Uses IDS to find the (approximately) closest unobstructed
+    node.
     """
 
     # TODO (ivogeorg):
     # Clip global to world edges if outside with iterative deapening 
-    # search to find the (approximately) closest unobstructed node
+    # search (IDS) to find the (approximately) closest unobstructed node
 
     # Calculate relative local position
     local_position = global_to_local(global_position, global_home)
@@ -92,8 +93,8 @@ def global_position_to_grid_node(global_position, global_home,
 
     # TODO (ivogeorg):
     # If node is obstructed at elevation, find the closest
-    # unobstructed. This doesn't guarantee that it can be reached,
-    # until 3D grid (e.g. courtyard of hotel).
+    # unobstructed with IDS. This doesn't guarantee that it can be 
+    # reached, until 3D grid (e.g. courtyard of hotel).
     # 4 corners (approximate (lon, lat)): 
     # SW (-122.4024, 37.7897), NW (-122.4024, 37.7979), 
     # NE (-122.3921, 37.7979), SE (-122.3921, 37.7897)
