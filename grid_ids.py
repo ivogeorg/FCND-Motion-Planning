@@ -33,7 +33,7 @@ if not grid[rand_pos[0], rand_pos[1]]:
     print("Position {1} is clear".format(rand_pos))   
 else:
     found = False
-    for i in range(grid.shape[0]):
+    for i in range(min(grid.shape[0], grid.shape[1])):
         for m in multipliers:
             if not grid[i * m[0], i * m[1]]:
                 print("Found clear position ({1}, {2})".format(i * m[0], i * m[1]))
