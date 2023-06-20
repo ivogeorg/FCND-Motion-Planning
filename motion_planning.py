@@ -126,7 +126,6 @@ class MotionPlanning(Drone):
 
     def plan_path(self):
         self.flight_state = States.PLANNING
-        print("Searching for a path ...")
         TARGET_ALTITUDE = 5
         SAFETY_DISTANCE = 5
 
@@ -167,13 +166,13 @@ class MotionPlanning(Drone):
         # not settable and is maintained along with global_position.
         # This is in north, east, down.
         
-        print('Global home {0}, global pos {1}, local pos {2}'.format(
-            self.global_home, self.global_position, self.local_position))
+        print('Global home : ', self.global_home)
+        print('Global position: ', self.global_position)
+        print('Local position: ', self.local_position)
 
         # Read in obstacle map
         data = np.loadtxt(
                 'colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
-        print("Colliders data shape: ", data.shape)
         
         # Define a grid for a particular altitude and safety margin around 
         # obstacles
@@ -193,7 +192,7 @@ class MotionPlanning(Drone):
         # grid). For example, a waypoint of (20, 10, 0, 0) is 20 m north and 
         # 10 m east of this position, and thus at a grid position 
         # (north_offset + 20, east_offset + 10).
-        print("North offset = {0}, east offset = {1}".format(north_offset, 
+        print("North offset = {0}, East offset = {1}".format(north_offset, 
                                                             east_offset))
         
         # Define starting point on the grid (this is just grid center)

@@ -225,6 +225,7 @@ def a_star(grid, h, start, goal):
     branch = {}
     found = False
     
+    print("Searching for a path ...")
     while not queue.empty():
         item = queue.get()
         current_node = item[1]
@@ -245,7 +246,8 @@ def a_star(grid, h, start, goal):
                 branch_cost = current_cost + action.cost
                 queue_cost = branch_cost + h(next_node, goal)
                 
-                if next_node not in visited:                
+                if next_node not in visited:
+                    print('DEBUG: Node {0}, branch length {1}'.format(next_node, len(branch)))                
                     visited.add(next_node)               
                     branch[next_node] = (branch_cost, current_node, action)
                     queue.put((queue_cost, next_node))
