@@ -68,6 +68,12 @@ class MotionPlanning(Drone):
                 if abs(self.local_position[2]) < 0.01:
                     self.disarming_transition()
 
+    # TODO (ivogeorg):
+    # Considering how long it may take to plan a path, and that it can fail,
+    # it may make more sense to plan before arming and takeoff. Upon failure,
+    # the drone will never arm. Upon taking a long time, the connection does
+    # not have to be extended unreasonably just so it doesn't time out before
+    # the path planning returns. (v.2)
     def state_callback(self):
         if self.in_mission:
             if self.flight_state == States.MANUAL:
@@ -278,6 +284,11 @@ class MotionPlanning(Drone):
         # TODO (ivogeorg): 
         #       Probabilistic roadmap with receding-horizon local replanning
         #       and smoothing (v.2)
+
+        # TODO (ivogeorg):
+        # Why does an up-down flipped grid (axis 0) result in paths
+        # passing through buildings? May it be in the construction
+        # of the waypoints?
 
         # Convert path to waypoints
         waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
