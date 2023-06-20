@@ -176,8 +176,13 @@ class MotionPlanning(Drone):
         
         # Define a grid for a particular altitude and safety margin around 
         # obstacles
+
+        # DEBUG (ivogeorg): 
+        # Drone path crosses buildings!!!
+        # grid, north_offset, east_offset = \
+        #     create_grid_flipped(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         grid, north_offset, east_offset = \
-            create_grid_flipped(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+            create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
         # NOTE 18 (ivogeorg):
         # create_grid_flipped flips axis 0 of grid (or, up-down) to conform to
         # the frame of the simulator.
