@@ -196,7 +196,7 @@ class MotionPlanning(Drone):
                                                             east_offset))
         
         # Define starting point on the grid (this is just grid center)
-        grid_start = (-north_offset, -east_offset)
+        # grid_start = (-north_offset, -east_offset)
         # NOTE 21 (ivogeorg): 
         # Due to the rounding to integers in create_grid_flipped, there aren't
         # unique global or local position tuples for the nodes. Instead, there 
@@ -216,6 +216,7 @@ class MotionPlanning(Drone):
         # global_position_to_grid_node. This function will be the workhorse of
         # the scenario where start and goal are given in global coordinates
         # (lon, lat, alt).
+        print('Starting from current position')
         grid_start = global_position_to_grid_node(
                         self.global_position, self.global_home, 
                         grid, TARGET_ALTITUDE, 
@@ -281,7 +282,7 @@ class MotionPlanning(Drone):
         # Set self.waypoints
         self.waypoints = waypoints
         # Send waypoints to sim (this is just for visualization of waypoints)
-        # self.send_waypoints()
+        self.send_waypoints()
 
     def start(self):
         self.start_log("Logs", "NavLog.txt")  
