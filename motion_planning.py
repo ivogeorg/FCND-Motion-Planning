@@ -327,8 +327,11 @@ if __name__ == "__main__":
     #       to local and the nearest unobstructed grid points should be
     #       identified. Grid points are local (north, east, altitude). (v.2)
 
-    conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)
-    drone = MotionPlanning(conn)  # TODO (ivogeorg): Global lat-lon start-target coord args! (v.2)
+    # conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)
+    # NOTE 53 (ivogeorg):
+    # Allow A* to find long paths
+    conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=1800)
+    drone = MotionPlanning(conn)
     time.sleep(1)
 
     drone.start()

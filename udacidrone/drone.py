@@ -115,6 +115,10 @@ class Drone(object):
             """Sorts incoming messages, updates the drone state variables and runs callbacks"""
             # print('Message received', msg_name, msg)
             if msg_name == MsgID.CONNECTION_CLOSED:
+                print('Connection timed out')
+                # TODO (ivogeorg): 
+                # go to manual, land, and disarm
+                # what is the regular sequence?
                 self.stop()
             else:
                 if (((msg.time - self._message_time) > 0.0)):
