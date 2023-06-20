@@ -113,7 +113,7 @@ class Drone(object):
 
         def on_message_receive(msg_name, msg):
             """Sorts incoming messages, updates the drone state variables and runs callbacks"""
-            # print('Message received', msg_name, msg)
+            print('Message received', msg_name, msg)
             if (((msg.time - self._message_time) > 0.0)):
                 self._message_frequency = 1.0 / (msg.time - self._message_time)
                 self._message_time = msg.time
