@@ -116,14 +116,15 @@ class Drone(object):
             # print('Message received', msg_name, msg)
             if msg_name == MsgID.CONNECTION_CLOSED:
                 self.stop()
+            else:
+                if (((msg.time - self._message_time) > 0.0)):
+                    self._message_frequency = 1.0 / (msg.time - self._message_time)
+                    self._message_time = msg.time
+                    self._time_bias = msg.time - time.time()
 
-            if (((msg.time - self._message_time) > 0.0)):
-                self._message_frequency = 1.0 / (msg.time - self._message_time)
-                self._message_time = msg.time
-                self._time_bias = msg.time - time.time()
+                if msg_name in self._update_property.keys():
+                    self._update_property[msg_name](msg)
 
-            if msg_name in self._update_property.keys():
-                self._update_property[msg_name](msg)
             self.notify_callbacks(msg_name, msg)  # pass it along to these listeners
             self.log_telemetry(msg_name, msg)
 
