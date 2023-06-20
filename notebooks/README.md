@@ -17,7 +17,7 @@
 
 #### III. From grids to graphs
 
-1. [Colinearity](Colinearity.ipynb). ([solution](Colinearity-Solution.ipynb))
+1. [Collinearity](Collinearity.ipynb). ([solution](Collinearity-Solution.ipynb))
 2. [Bresenham](Bresenham.ipynb). ([solution](Bresenham-Solution.ipynb))
 3. [A* in a City](A-Star-City.ipynb). ([solution](A-Star-City-Solution.ipynb))
 4. [Medial Axis Skeletonization](Medial-Axis.ipynb). ([solution](Medial-Axis-Solution.ipynb))
