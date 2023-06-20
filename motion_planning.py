@@ -305,7 +305,13 @@ class MotionPlanning(Drone):
         # while self.in_mission:
         #    pass
 
+        # TODO (ivogeorg):
+        # Why stop logging here? Does self.connection.start() start the
+        # whole process and block for the duration of the drone flight?
+
         self.stop_log()
+
+
 
 # TODO (ivogeorg): 
 #       Command-line argument for planner version (1-grid, 2-graph, 3-receding 
@@ -340,3 +346,4 @@ if __name__ == "__main__":
     time.sleep(1)
 
     drone.start()
+
