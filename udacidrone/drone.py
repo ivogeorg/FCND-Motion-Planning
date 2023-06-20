@@ -117,8 +117,9 @@ class Drone(object):
             if msg_name == MsgID.CONNECTION_CLOSED:
                 print('Connection timed out')
                 # TODO (ivogeorg): 
-                # go to manual, land, and disarm
-                # what is the regular sequence?
+                # go to land, disarm, manual
+                # Isn't it proper to send a message instead of hardcoding
+                # so the proper transitions are performed by the subclass?
                 self.stop()
             else:
                 if (((msg.time - self._message_time) > 0.0)):

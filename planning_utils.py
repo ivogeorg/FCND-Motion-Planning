@@ -54,7 +54,10 @@ def create_grid(data, drone_altitude, safety_distance):
     
     return grid, int(north_min), int(east_min)
 
-
+# TODO (ivogeorg):
+# Why does an up-down flipped grid (axis 0) result in paths
+# passing through buildings? May it be in the construction
+# of the waypoints?
 def create_grid_flipped(data, drone_altitude, safety_distance):
     """
     Returns a flipped grid. Origin (0, 0) is bottom left.
