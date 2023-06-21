@@ -104,25 +104,33 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
       NW = (-1, -1, sqrt(2))
       NE = (-1, 1, sqrt(2))
    ```
-2. In the `valid_actions` method, whenever a principal direction is removed, the diagonal directions having it as a component are also removed:
+2. In the `valid_actions` method, whenever a principal direction is removed, the diagonal directions having it as a component are also removed, conditionally to prevent attempts at removing non-existent list elements:
    ```
     if x - 1 < 0 or grid[x - 1, y] == 1:
         valid_actions.remove(Action.NORTH)
-        valid_actions.remove(Action.NW)
-        valid_actions.remove(Action.NE)
+        if Action.NW in valid_actions:
+            valid_actions.remove(Action.NW)
+        if Action.NE in valid_actions:
+            valid_actions.remove(Action.NE)
     if x + 1 > n or grid[x + 1, y] == 1:
         valid_actions.remove(Action.SOUTH)
-        valid_actions.remove(Action.SW)
-        valid_actions.remove(Action.SE)
+        if Action.SW in valid_actions:
+            valid_actions.remove(Action.SW)
+        if Action.SE in valid_actions:
+            valid_actions.remove(Action.SE)
     if y - 1 < 0 or grid[x, y - 1] == 1:
         valid_actions.remove(Action.WEST)
-        valid_actions.remove(Action.NW)
-        valid_actions.remove(Action.SW)
+        if Action.NW in valid_actions:
+            valid_actions.remove(Action.NW)
+        if Action.SW in valid_actions:
+            valid_actions.remove(Action.SW)
     if y + 1 > m or grid[x, y + 1] == 1:
         valid_actions.remove(Action.EAST)
-        valid_actions.remove(Action.NE)
-        valid_actions.remove(Action.SE)
-   ```
+        if Action.NE in valid_actions:
+            valid_actions.remove(Action.NE)
+        if Action.SE in valid_actions:
+            valid_actions.remove(Action.SE)
+    ```
 3. In the simulator, the zig-zag trajectory is now a straight line:
    
    <img src="/assets/Project2-diagonal-motion.png" width="450"/>  
