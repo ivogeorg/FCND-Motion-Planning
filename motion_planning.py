@@ -7,7 +7,7 @@ from math import sqrt, fabs
 import numpy as np
 from numpy.random import randint
 
-from planning_utils import a_star, heuristic, create_grid, create_grid_flipped, global_position_to_grid_node
+from planning_utils import a_star, heuristic, create_grid, create_grid_flipped, global_position_to_grid_node, minmax
 from udacidrone import Drone
 from udacidrone.connection import MavlinkConnection
 from udacidrone.messaging import MsgID
@@ -254,13 +254,19 @@ class MotionPlanning(Drone):
         # in shorter flights with very little delay between them. Defining
         # latitude and longitude steps (a tenth of the corresponding span)
         # allows to generate goals within a small square of the start
-        # position.
-        lat_step = fabs(37.789649 - 37.797903) / 10.0
-        lon_step = fabs(-122.392115 - (-122.402424)) / 10.0
+        # position. Clip to world edges.
+        lat_min = 37.789649
+        lat_max = 37.797903
+        lon_min = -122.402424
+        lon_max = -122.392115
+        lat_step = fabs(lat_max - lat_min) / 10.0
+        lon_step = fabs(lon_max - lon_min) / 10.0
         goal_global_lat = np.random.uniform(self.global_position[1] - lat_step,
                                             self.global_position[1] + lat_step)
+        goal_global_lat = minmax(lat_min, goal_global_lat, lat_max)
         goal_global_lon = np.random.uniform(self.global_position[0] - lon_step,
                                             self.global_position[0] + lon_step)
+        goal_global_lon = minmax(lon_min, goal_global_lon, lon_max)
         grid_goal = global_position_to_grid_node(
                         (goal_global_lon, goal_global_lat, 0.0), 
                         self.global_home, 
