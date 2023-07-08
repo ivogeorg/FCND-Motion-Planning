@@ -2,6 +2,7 @@ import argparse
 import time
 import msgpack                  # (ivogeorg) To send waypoints to simulator
 from enum import Enum, auto
+from math import sqrt, fabs
 
 import numpy as np
 from numpy.random import randint
@@ -245,8 +246,21 @@ class MotionPlanning(Drone):
         # 4 corners (approximate (lon, lat)): 
         # SW (-122.402424, 37.789649), NW (-122.402424, 37.797903), 
         # NE (-122.392115, 37.797903), SE (-122.392115, 37.789649)
-        goal_global_lat = np.random.uniform(37.789649, 37.797903)
-        goal_global_lon = np.random.uniform(-122.392115, -122.402424)
+        # NOTE 26 (ivogeorg):
+        # Long paths take a very long time to find by A*, and cause timeout-
+        # related problems with the messaging protocol, including a hang after
+        # takeoff_transition. The easiest way to circumvent this problem is to
+        # limit the distance between the start and the goal. This will result
+        # in shorter flights with very little delay between them. Defining
+        # latitude and longitude steps (a tenth of the corresponding span)
+        # allows to generate goals within a small square of the start
+        # position.
+        lat_step = fabs(37.789649 - 37.797903) / 10.0
+        lon_step = fabs(-122.392115 - (-122.402424)) / 10.0
+        goal_global_lat = np.random.uniform(self.global_position[1] - lat_step,
+                                            self.global_position[1] + lat_step)
+        goal_global_lon = np.random.uniform(self.global_position[0] - lon_step,
+                                            self.global_position[0] + lon_step)
         grid_goal = global_position_to_grid_node(
                         (goal_global_lon, goal_global_lat, 0.0), 
                         self.global_home, 
