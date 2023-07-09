@@ -286,3 +286,30 @@ def heuristic(position, goal_position):
 
 def minmax(low, value, high):
     return min(max(low, value), high)
+
+
+def prune_path(path):
+    def point(p):
+        return np.array([p[0], p[1], 1.0]).reshape(1, -1)
+
+    def collinearity_check(p1, p2, p3, epsilon=1e-6):
+        m = np.concatenate((point(p1), point(p2), point(p3)), 0)
+        det = np.linalg.det(m)
+        return abs(det) < epsilon
+
+    print("Pruning path on collinearity of points...") 
+    print("Path starting size", len(path))   
+    pruned_path = [p for p in path]
+
+    i = 0
+    while i < len(pruned_path) -2:
+        p1 = pruned_path[i]
+        p2 = pruned_path[i + 1]
+        p3 = pruned_path[i + 2]
+        if collinearity_check(p1, p2, p3):
+            pruned_path.remove(pruned_path[i + 1])
+        else:
+            i += 1
+
+    print("Path size after pruning", len(pruned_path))  
+    return pruned_path

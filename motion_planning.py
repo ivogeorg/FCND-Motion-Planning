@@ -7,7 +7,7 @@ from math import sqrt, fabs
 import numpy as np
 from numpy.random import randint
 
-from planning_utils import a_star, heuristic, create_grid, create_grid_flipped, global_position_to_grid_node, minmax
+from planning_utils import a_star, heuristic, create_grid, create_grid_flipped, global_position_to_grid_node, minmax, prune_path
 from udacidrone import Drone
 from udacidrone.connection import MavlinkConnection
 from udacidrone.messaging import MsgID
@@ -325,10 +325,8 @@ class MotionPlanning(Drone):
         
         # ***** WAYPOINTS *****
 
-        # TODO: prune path to minimize number of waypoints
-        # TODO (ivogeorg): Function prune_path() in planning_utils.py.
-        # Collinearity worked well. How does Brezenham prune?
-        # With diagonal actions Brezenham's utility diminishes.
+        # DONE: prune path to minimize number of waypoints
+        self.path = prune_path(self.path)
 
         # TODO: (if you're feeling ambitious): Try a different approach altogether!
         # TODO (ivogeorg): 
