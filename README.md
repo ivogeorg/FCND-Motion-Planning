@@ -1,6 +1,6 @@
 # FCND Project 2: Motion Planning
 
-Planning in the complex urban environment of San Francisco using the `udacidrone` API and the Unity-based Udacity simulator. A [guide](project-and-submission-guide.md) describes the project setup and the submission requirements. The code-writing **TODOs**, both required and optional, are all inlined in [motion_planning.py](motion_planning.py).
+Planning in the complex urban environment of San Francisco using the `udacidrone` API and the Unity-based Udacity simulator. A [guide](project-and-submission-guide.md) describes the project setup and the submission requirements. Extensive inline notes provided in [motion_planning.py](motion_planning.py).
 
 <img src="/assets/FCND-Planning-Upban-World.png" width="840"/>
 
@@ -42,6 +42,10 @@ Defined in [udacidrone/udacidrone/drone.py](https://github.com/udacity/udacidron
 5. Command wrappers (`arm`, `cmd_position`, etc.)
 
 This is essentially a class that serves as an interface to the vehicle dynamics model in the [simulator](#4-simulator). A subclass inherits everything that defines the vehicle and its control from its parent so that it can focus on the additional functionality (in this case, planning a path through a complex 2.5D environment.
+
+#### 2.1. Local `udacidrone` Tree
+
+Due to the necessity to debug the [hanging issue](4-5-hanging-in-the-messaging-protocol) described further down below, and furthermore because of the dissappearance of the preinstalled Udacity workspaces, I have imported locally the `udacidrone` tree into the repository and it is run from there.
 
 ### 3. `udacidrone` Communications
 
@@ -92,6 +96,55 @@ The map data does not show any obstacle at the same location and anyway the defa
 
 It's interesting to point out that since the 2D is for a certain altitude, a clear (white or magenta) region is not necessarily at zero altitude, so the drone might not be able to land there w/o modification of the [`velocity_callback`](/motion_planning.py#L61) code.
 
+#### 4.5. Hanging in the Messaging Protocol
+
+When the A* takes a long time to find a path (usually of unpruned length of 200+ steps) some internal timeout or protocol invariant is violated and the program hangs in the `pymavlink` code. The following is a representative output upon killing the application:
+
+```shell
+(fcnd) orbital@yocto-sandbox:~/git-repos/FCND-Motion-Planning$ /home/orbital/miniconda3/envs/fcnd/bin/python /home/orbital/git-repos/FCND-Motion-Planning/motion_planning.py
+Logs/TLog.txt
+Logs/NavLog.txt
+starting connection
+arming transition
+Global home :  [-122.3974533   37.7924804    0.       ]
+Global position:  [-122.3971478   37.7905706    0.207    ]
+Local position:  [-2.12161575e+02  2.71234398e+01 -2.04146892e-01]
+North offset = -316, East offset = -445
+Starting from current position
+Grid position (105, 474) is obstructed
+Looking for an adjacent clear position...
+Found clear grid position (104, 473)
+Grid position (158, 483) is obstructed
+Looking for an adjacent clear position...
+Found clear grid position (166, 496)
+Local Start and Goal:  (104, 473) (166, 496)
+Searching for a path ...
+**********************
+     Found path!      
+**********************
+Path length:  285
+Sending waypoints to simulator ...
+takeoff transition
+^CTraceback (most recent call last):
+  File "/home/orbital/git-repos/FCND-Motion-Planning/motion_planning.py", line 415, in <module>
+    drone.start()
+  File "/home/orbital/git-repos/FCND-Motion-Planning/motion_planning.py", line 369, in start
+    self.connection.start()
+  File "/home/orbital/git-repos/FCND-Motion-Planning/udacidrone/connection/mavlink_connection.py", line 235, in start
+    self.dispatch_loop()
+  File "/home/orbital/git-repos/FCND-Motion-Planning/udacidrone/connection/mavlink_connection.py", line 113, in dispatch_loop
+    msg = self.wait_for_message()
+  File "/home/orbital/git-repos/FCND-Motion-Planning/udacidrone/connection/mavlink_connection.py", line 199, in wait_for_message
+    msg = self._master.recv_match(blocking=True, timeout=1)
+  File "/home/orbital/miniconda3/envs/fcnd/lib/python3.6/site-packages/pymavlink/mavutil.py", line 355, in recv_match
+    self.select(timeout/2)
+  File "/home/orbital/miniconda3/envs/fcnd/lib/python3.6/site-packages/pymavlink/mavutil.py", line 212, in select
+    (rin, win, xin) = select.select([self.fd], [], [], timeout)
+KeyboardInterrupt
+(fcnd) orbital@yocto-sandbox:~/git-repos/FCND-Motion-Planning$ 
+```
+Once the application hangs due to this problem, the simulator has to be reset before it would stop hanging, leading me to suspect that the problem is simulator-related (after all, the drone model is contained in the simulator and it communicated using `pymavlink` with the `udacidrone.Drone`.
+
 ## Code Sections
 
 ### 1. Diagonal Actions
@@ -135,12 +188,73 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
    
    <img src="/assets/Project2-diagonal-motion.png" width="450"/>  
 
+### 2. Global Start and Goal
+
+The function `global_position_to_grid_node(global_position, global_home, grid, elevation, north_offset, east_offset)` is the workhorse of providing the start and goal positions using global (lon, lat, alt) coordinates. It is implemented in `planning_utils.py` along with the helper function `closest_clear_node(grid, node_position)` which performs a "spiral" iterative deepening search for the closest unobstructed node to the one corresponding to the given global position.
+
+The start is either the center of the grid (the `lat0, lon0` coordinates given at the top of the `colliders.csv` file), as done in the following code in the encapsulating method `init_navigation(self)` in `motion_planning.py`:
+```python
+latlon = ""
+with open("colliders.csv", "r") as f:
+    latlon = f.readline()
+lat0, lon0 = latlon.split(", ")
+lat0 = float(lat0.split()[1])
+lon0 = float(lon0.split()[1])
+```
+or the (approximate) end of the previous misssion, which is maintained by the (unreset) simulator under `global_position`.
+
+### 3. Randomized Goal
+
+The goal is randomized in the following code in the `plan_path` method in `motion_planning.py`:
+```python
+ # NOTE 26 (ivogeorg):
+  # Long paths take a very long time to find by A*, and cause timeout-
+  # related problems with the messaging protocol, including a hang after
+  # takeoff_transition. The easiest way to circumvent this problem is to
+  # limit the distance between the start and the goal. This will result
+  # in shorter flights with very little delay between them. Defining
+  # latitude and longitude steps (a tenth of the corresponding span)
+  # allows to generate goals within a small square of the start
+  # position. Clip to world edges.
+  LAT_MIN = 37.789649
+  LAT_MAX = 37.797903
+  LON_MIN = -122.402424
+  LON_MAX = -122.392115
+  lat_step = fabs(LAT_MAX - LAT_MIN) / 10.0
+  lon_step = fabs(LON_MAX - LON_MIN) / 10.0
+  goal_global_lat = np.random.uniform(self.global_position[1] - lat_step,
+                                      self.global_position[1] + lat_step)
+  goal_global_lat = minmax(LAT_MIN, goal_global_lat, LAT_MAX)
+  goal_global_lon = np.random.uniform(self.global_position[0] - lon_step,
+                                      self.global_position[0] + lon_step)
+  goal_global_lon = minmax(LON_MIN, goal_global_lon, LON_MAX)
+  grid_goal = global_position_to_grid_node(
+                  (goal_global_lon, goal_global_lat, 0.0), 
+                  self.global_home, 
+                  self.grid, self.TARGET_ALTITUDE, 
+                  self.north_offset, self.east_offset)
+```
+To limit the length of the path (and so avoid some of the occurrences of the [hanging issue](4-5-hanging-in-the-messaging-protocol), the distance of the goal from the start is constrained within a rectangle of half-size 1/10-th of the corresponding global coordinate. The function `minmax` from `planning_utils.py` is used to clip the random coordinates to the edges of the world. The maximum and minimum global coordinates were determined by manual drone flight around the world.
+
+### 4. Connection Timeout
+
+The mavlink connection timeout has been increased from 60 to 1800 to allow A* to find a path.
+
+### 5. Path Pruning
+
+The path is being pruned in the `prune_path(path)` function in `planning_utils.py`, currently using the collinearity test for straight sections of the path. The screenshot below shows path with pruned straight sections.
+
+<img src="/assets/FCND-Planning-Pruned-Path-Collinearity.png" width="450"/>  
+
+In a future release, a Bresenham-like algorithm will be used to prune the zig-zag sections of the path.
 
 ## Flying the Drone
 
 ### 1. Overview of Setup
 
-The drone can fly multiple missions in a row without resetting the simulator. It randomizes its next goal, finds a path to it, and follows the waypoints to reach it. That goal becomes the new start position. The goal is generated in global coorindates and is converted first to local coordinates and then to a grid node. If the grid node has an obstacle at the target altitude, the closest unobstructed node is found.
+The drone can fly multiple consecutive missions in a row without resetting the simulator. It randomizes its next goal, finds a path to it, and follows the waypoints to reach it. That goal becomes the new start position. The goal is generated in global coorindates and is converted first to local coordinates and then to a grid node. If the grid node has an obstacle at the target altitude, the closest unobstructed node is found.
+
+<img src="/assets/FCND-Planning-Flying-Around.png" width="850"/>  
 
 ### 2. Instructions
 
