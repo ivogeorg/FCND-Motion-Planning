@@ -34,6 +34,8 @@ class MotionPlanning(Drone):
         self.in_mission = True
         self.check_state = {}
 
+        self.has_mission = False  # Path not found (yet)
+
         # initial state
         self.flight_state = States.MANUAL
 
@@ -41,6 +43,9 @@ class MotionPlanning(Drone):
         self.register_callback(MsgID.LOCAL_POSITION, self.local_position_callback)
         self.register_callback(MsgID.LOCAL_VELOCITY, self.velocity_callback)
         self.register_callback(MsgID.STATE, self.state_callback)
+
+
+
 
     # TODO (ivogeorg): 1. Parametrize the deadband radius for waypoints.
     # TODO (ivogeorg): 2. For different waypoints (e.g. graph nodes) pick a
@@ -63,11 +68,13 @@ class MotionPlanning(Drone):
                         # TODO (ig): Why?
                         self.landing_transition()
 
+
     def velocity_callback(self):
         if self.flight_state == States.LANDING:
             if self.global_position[2] - self.global_home[2] < 0.1: # TODO (ig): Should land at target, not only home
                 if abs(self.local_position[2]) < 0.01:
                     self.disarming_transition()
+
 
     # TODO (ivogeorg):
     # Considering how long it may take to plan a path, and that it can fail,
@@ -83,10 +90,14 @@ class MotionPlanning(Drone):
                 if self.armed:
                     self.plan_path()
             elif self.flight_state == States.PLANNING:
-                self.takeoff_transition()
+                if self.has_mission:  # Next transition depends on having path
+                    self.takeoff_transition()
+                else:
+                    self.disarming_transition()
             elif self.flight_state == States.DISARMING:
                 if ~self.armed & ~self.guided:
                     self.manual_transition()
+
 
     def arming_transition(self):
         self.flight_state = States.ARMING
@@ -94,10 +105,12 @@ class MotionPlanning(Drone):
         self.arm()
         self.take_control()
 
+
     def takeoff_transition(self):
         self.flight_state = States.TAKEOFF
         print("takeoff transition")
         self.takeoff(self.target_position[2])
+
 
     def waypoint_transition(self):
         self.flight_state = States.WAYPOINT
@@ -108,16 +121,19 @@ class MotionPlanning(Drone):
                 self.target_position[0], self.target_position[1], 
                 self.target_position[2], self.target_position[3])
 
+
     def landing_transition(self):
         self.flight_state = States.LANDING
         print("landing transition")
         self.land()
+
 
     def disarming_transition(self):
         self.flight_state = States.DISARMING
         print("disarm transition")
         self.disarm()
         self.release_control()
+
 
     def manual_transition(self):
         self.flight_state = States.MANUAL
@@ -126,17 +142,12 @@ class MotionPlanning(Drone):
         self.in_mission = False
         print("Local position: ", self.local_position)
 
-    def send_waypoints(self):
-        print("Sending waypoints to simulator ...")
-        data = msgpack.dumps(self.waypoints)
-        self.connection._master.write(data)
 
-    def plan_path(self):
-        self.flight_state = States.PLANNING
-        TARGET_ALTITUDE = 5
-        SAFETY_DISTANCE = 5
+    def init_navigation(self):
+        # ***** SETUP *****
 
-        self.target_position[2] = TARGET_ALTITUDE
+        self.TARGET_ALTITUDE = 5
+        self.SAFETY_DISTANCE = 5
 
         # DONE (ivogeorg): read lat0, lon0 from colliders into floating point
         # values
@@ -177,6 +188,23 @@ class MotionPlanning(Drone):
         print('Global position: ', self.global_position)
         print('Local position: ', self.local_position)
 
+
+    def send_waypoints(self):
+        print("Sending waypoints to simulator ...")
+        data = msgpack.dumps(self.waypoints)
+        self.connection._master.write(data)
+
+
+    def plan_path(self):
+
+        self.flight_state = States.PLANNING
+
+        self.init_navigation()  # Encapsulate flight settings
+
+        self.target_position[2] = self.TARGET_ALTITUDE
+
+        # ***** GRID & PATH *****
+
         # Read in obstacle map
         data = np.loadtxt(
                 'colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
@@ -188,8 +216,8 @@ class MotionPlanning(Drone):
         # Drone path crosses buildings!!!
         # grid, north_offset, east_offset = \
         #     create_grid_flipped(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
-        grid, north_offset, east_offset = \
-            create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
+        self.grid, self.north_offset, self.east_offset = \
+            create_grid(data, self.TARGET_ALTITUDE, self.SAFETY_DISTANCE)
         # NOTE 18 (ivogeorg):
         # create_grid_flipped flips axis 0 of grid (or, up-down) to conform to
         # the frame of the simulator.
@@ -204,8 +232,8 @@ class MotionPlanning(Drone):
         # grid). For example, a waypoint of (20, 10, 0, 0) is 20 m north and 
         # 10 m east of this position, and thus at a grid position 
         # (north_offset + 20, east_offset + 10).
-        print("North offset = {0}, East offset = {1}".format(north_offset, 
-                                                            east_offset))
+        print("North offset = {0}, East offset = {1}".format(self.north_offset, 
+                                                            self.east_offset))
         
         # Define starting point on the grid (this is just grid center)
         # grid_start = (-north_offset, -east_offset)
@@ -231,8 +259,8 @@ class MotionPlanning(Drone):
         print('Starting from current position')
         grid_start = global_position_to_grid_node(
                         self.global_position, self.global_home, 
-                        grid, TARGET_ALTITUDE, 
-                        north_offset, east_offset)
+                        self.grid, self.TARGET_ALTITUDE, 
+                        self.north_offset, self.east_offset)
 
         # DONE: Set goal as some arbitrary position on the grid
         # NOTE 24 (ivogeorg): 
@@ -255,23 +283,23 @@ class MotionPlanning(Drone):
         # latitude and longitude steps (a tenth of the corresponding span)
         # allows to generate goals within a small square of the start
         # position. Clip to world edges.
-        lat_min = 37.789649
-        lat_max = 37.797903
-        lon_min = -122.402424
-        lon_max = -122.392115
-        lat_step = fabs(lat_max - lat_min) / 10.0
-        lon_step = fabs(lon_max - lon_min) / 10.0
+        LAT_MIN = 37.789649
+        LAT_MAX = 37.797903
+        LON_MIN = -122.402424
+        LON_MAX = -122.392115
+        lat_step = fabs(LAT_MAX - LAT_MIN) / 10.0
+        lon_step = fabs(LON_MAX - LON_MIN) / 10.0
         goal_global_lat = np.random.uniform(self.global_position[1] - lat_step,
                                             self.global_position[1] + lat_step)
-        goal_global_lat = minmax(lat_min, goal_global_lat, lat_max)
+        goal_global_lat = minmax(LAT_MIN, goal_global_lat, LAT_MAX)
         goal_global_lon = np.random.uniform(self.global_position[0] - lon_step,
                                             self.global_position[0] + lon_step)
-        goal_global_lon = minmax(lon_min, goal_global_lon, lon_max)
+        goal_global_lon = minmax(LON_MIN, goal_global_lon, LON_MAX)
         grid_goal = global_position_to_grid_node(
                         (goal_global_lon, goal_global_lat, 0.0), 
                         self.global_home, 
-                        grid, TARGET_ALTITUDE, 
-                        north_offset, east_offset)
+                        self.grid, self.TARGET_ALTITUDE, 
+                        self.north_offset, self.east_offset)
 
         # TODO (ivogeorg):
         #       Global (lon, lat) start and target should be read in from cmd line 
@@ -288,13 +316,15 @@ class MotionPlanning(Drone):
         # Add diagonal motions with a cost of sqrt(2) to your A* implementation
         # or move to a different search space such as a graph (not done here)
         print('Local Start and Goal: ', grid_start, grid_goal)
-        path, _ = a_star(grid, heuristic, grid_start, grid_goal)
-        print("Path length: ", len(path))
-        # TODO (ivogeorg): If path is None, should gracefully shut down.
-        # `plan_path` should therefore return a boolean to indicate 
-        # success of failure. This should be treated accordingly in the
-        # transitions code.
+        self.path, _ = a_star(self.grid, heuristic, grid_start, grid_goal)
+        print("Path length: ", len(self.path))
+        if self.path == None:
+            return False
+        else:
+            self.has_mission = True  # Path found, can proceed with takeoff
         
+        # ***** WAYPOINTS *****
+
         # TODO: prune path to minimize number of waypoints
         # TODO (ivogeorg): Function prune_path() in planning_utils.py.
         # Collinearity worked well. How does Brezenham prune?
@@ -311,7 +341,8 @@ class MotionPlanning(Drone):
         # of the waypoints?
 
         # Convert path to waypoints
-        waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
+        waypoints = [[p[0] + self.north_offset, p[1] + self.east_offset, 
+                      self.TARGET_ALTITUDE, 0] for p in self.path]
         # NOTE (ivogeorg): For this to make sense it means that the simulator works in
         # meters relative to global home and local position zero (0, 0, 0)!
 
@@ -319,6 +350,8 @@ class MotionPlanning(Drone):
         self.waypoints = waypoints
         # Send waypoints to sim (this is just for visualization of waypoints)
         self.send_waypoints()
+
+        return True  ## Successful planning: path found, waypoints sent
 
     def start(self):
         self.start_log("Logs", "NavLog.txt")  

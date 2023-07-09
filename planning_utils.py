@@ -271,6 +271,8 @@ def a_star(grid, h, start, goal):
         print('**********************')
         print('Failed to find a path!')
         print('**********************') 
+        path = None
+        path_cost = -1
 
     # TODO (ivogeorg):
     # Return found (bool), path (None if not found), path_cost (-1 if no path)
