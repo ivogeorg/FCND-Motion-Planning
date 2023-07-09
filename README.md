@@ -45,7 +45,7 @@ This is essentially a class that serves as an interface to the vehicle dynamics 
 
 #### 2.1. Local `udacidrone` Tree
 
-Due to the necessity to debug the [hanging issue](45-hanging-in-the-messaging-protocol) described further down below, and furthermore because of the dissappearance of the preinstalled Udacity workspaces, I have imported locally the `udacidrone` tree into the repository and it is run from there.
+Due to the necessity to debug the [hanging issue](#45-hanging-in-the-messaging-protocol) described further down below, and furthermore because of the dissappearance of the preinstalled Udacity workspaces, I have imported locally the `udacidrone` tree into the repository and it is run from there.
 
 ### 3. `udacidrone` Communications
 
@@ -234,7 +234,7 @@ The goal is randomized in the following code in the `plan_path` method in `motio
                   self.grid, self.TARGET_ALTITUDE, 
                   self.north_offset, self.east_offset)
 ```
-To limit the length of the path (and so avoid some of the occurrences of the [hanging issue](45-hanging-in-the-messaging-protocol), the distance of the goal from the start is constrained within a rectangle of half-size 1/10-th of the corresponding global coordinate. The function `minmax` from `planning_utils.py` is used to clip the random coordinates to the edges of the world. The maximum and minimum global coordinates were determined by manual drone flight around the world.
+To limit the length of the path (and so avoid some of the occurrences of the [hanging issue](#45-hanging-in-the-messaging-protocol), the distance of the goal from the start is constrained within a rectangle of half-size 1/10-th of the corresponding global coordinate. The function `minmax` from `planning_utils.py` is used to clip the random coordinates to the edges of the world. The maximum and minimum global coordinates were determined by manual drone flight around the world.
 
 ### 4. Connection Timeout
 
