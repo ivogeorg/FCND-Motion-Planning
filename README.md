@@ -190,7 +190,7 @@ The diagonal actions are implemented in the `planning_uitls.py` file, specifical
 
 ### 2. Global Start and Goal
 
-The function `global_position_to_grid_node(global_position, global_home, grid, elevation, north_offset, east_offset)` is the workhorse of providing the start and goal positions using global (lon, lat, alt) coordinates. It is implemented in `planning_utils.py` along with the helper function `closest_clear_node(grid, node_position)` which performs a "spiral" iterative deepening search for the closest unobstructed node to the one corresponding to the given global position.
+The function `global_position_to_grid_node(global_position, global_home, grid, elevation, north_offset, east_offset)` is the workhorse of providing the start and goal positions using global (lon, lat, alt) coordinates. It is implemented in `planning_utils.py` along with the helper function `closest_clear_node(grid, node_position)` which performs a sort of "outward spiral" iterative deepening search for the closest unobstructed node to the one corresponding to the given global position.
 
 The start is either the center of the grid (the `lat0, lon0` coordinates given at the top of the `colliders.csv` file), as done in the following code in the encapsulating method `init_navigation(self)` in `motion_planning.py`:
 ```python
