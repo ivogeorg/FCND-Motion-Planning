@@ -12,7 +12,7 @@
 
 1. [Geodetic to NED](Geodetic-to-NED.ipynb). ([solution](Geodetic-to-NED-Solution.ipynb))
 2. [Euler Rotations](Rotations.ipynb). ([solution](Rotations-Solution.ipynb))
-3. [Quaternions](Quaternion.ipynb). ([solution](Quaternions-Solution.ipynb))
+3. [Quaternions](Quaternions.ipynb). ([solution](Quaternions-Solution.ipynb))
 4. [Configuration Space](Configuration-Space.ipynb). ([solution](Configuration-Space-Solution.ipynb))
 
 #### III. From grids to graphs
